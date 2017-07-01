@@ -1,6 +1,6 @@
 CXXFLAGS = -g -std=c++11 -Wall -fmessage-length=0 -pthread
 
-OBJS =		main.o UniqueLock.o Observable.o StockFactory.o
+OBJS =		main.o UniqueLock.o Observable.o StockFactory.o singleton.o
 
 LIBS =
 

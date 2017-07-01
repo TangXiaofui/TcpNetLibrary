@@ -34,7 +34,7 @@ private:
   mutex mtx;
 };
 
-
+void testObserver();
 
 
 

@@ -54,5 +54,53 @@ void Observable::notifyAll()
 	}
   }
 }
+namespace {
+class A{
+public:
+  A(){
+    cout << "a" << endl;
+  }
+  ~A(){
+    cout << "~a" << endl;
+  }
+};
+
+class B{
+public:
+  B(shared_ptr<A> a):ta(a)
+  {
+    cout << "b" << endl;
+  }
+  ~B()
+  {
+    cout << "~B" << endl;
+  }
+
+  shared_ptr<A> ta;
+};
+
+}
+void testObserver()
+{
+  //    Observable ob;
+  //    ob.register_(make_shared<Observer>());
+  //    cout << "--------------" << endl;
+  //    ob.register_(make_shared<Observer>());
+  //    ob.notifyAll();
+  //    shared_ptr<A> ta = make_shared<A>();
+  ////    B b(ta);
+  //    ta = make_shared<A>();
+  //    cout << "-----------------" << endl;
+  //
+  //    shared_ptr<A> a(new A[10],[](A *a){delete[] a;});
+
+  //    shared_ptr<StockFactory> f(new StockFactory);
+  //    shared_ptr<Stock> s = f->get("test");
+  //    f->get("test1");
+  //    f->get("test");
+  //    cout << "size :" << f->getSize() << endl;
+  //    cout << "------------" << endl;
+
+}
 
 

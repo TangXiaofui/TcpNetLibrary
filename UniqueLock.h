@@ -50,4 +50,6 @@ public:
   int count;
 };
 
+void testMutex();
+
 #endif /* UNIQUELOCK_H_ */

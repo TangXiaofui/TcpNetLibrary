@@ -18,3 +18,17 @@ void func()
 
 }
 
+
+void testMutex()
+{
+      std::vector<thread> worker;
+      for(int i = 0 ; i < 20; i++)
+        {
+  	worker.emplace_back(func);
+        }
+      for(auto &t : worker)
+        {
+  	t.join();
+        }
+      cout << counter << endl;
+}
