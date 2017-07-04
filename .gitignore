@@ -1,2 +1,5 @@
 .cproject
 .project
+*.o
+.settings/
+MultiThreadSafe

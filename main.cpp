@@ -10,6 +10,7 @@
 #include "Observable.h"
 #include "StockFactory.h"
 #include "singleton.h"
+#include "pthreadKey.h"
 #include <cassert>
 
 
@@ -24,10 +25,24 @@ void testShared()
   cout << *a << " " << *b << endl;
 }
 
+void testUnique()
+{
+  unique_ptr<int> a(new int(5));
+//  a.reset();
+  unique_ptr<int> b = std::move(a);
+  if(!a)
+    {
+      cout << "a is nullptr" << endl;
+      cout <<"-------"<< b.get() <<endl;
+    }
+
+}
+
 int main(void) {
 
 //    testObjectLife();
-    testSingleton();
-
+//    testSingleton();
+//    testUnique();
+    testKey();
     return EXIT_SUCCESS;
 }
