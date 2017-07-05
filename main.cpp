@@ -12,37 +12,32 @@
 #include "singleton.h"
 #include "pthreadKey.h"
 #include <cassert>
+#include "utility.h"
+#include <sys/syscall.h>
+#include <typeinfo>	//typeid
+#include "logging.h"
+#include "eventLoop.h"
+#include "channel.h"
+#include <sys/timerfd.h>
+#include <string.h>
 
-
-void testShared()
-{
-  shared_ptr<int> a(new int(5));
-  shared_ptr<int> b = a;
-  {
-    shared_ptr<int> c(new int(10));
-    a.swap(c);
-  }
-  cout << *a << " " << *b << endl;
-}
-
-void testUnique()
-{
-  unique_ptr<int> a(new int(5));
-//  a.reset();
-  unique_ptr<int> b = std::move(a);
-  if(!a)
-    {
-      cout << "a is nullptr" << endl;
-      cout <<"-------"<< b.get() <<endl;
-    }
-
-}
 
 int main(void) {
 
-//    testObjectLife();
-//    testSingleton();
-//    testUnique();
-    testKey();
+    EventLoop loop;
+    int timefd = ::timerfd_create(CLOCK_MONOTONIC,TFD_NONBLOCK|TFD_CLOEXEC);
+    Channel channel(&loop,timefd);
+    channel.setReadCallBack([&](){
+      info("timeout");
+      loop.quit();
+    });
+    channel.enableReading();
+    struct itimerspec howlong;
+    ::bzero(&howlong,sizeof(howlong));
+    howlong.it_value.tv_sec = 5;
+    ::timerfd_settime(timefd,0,&howlong,NULL);
+    loop.loop();
+    ::close(timefd);
+
     return EXIT_SUCCESS;
 }

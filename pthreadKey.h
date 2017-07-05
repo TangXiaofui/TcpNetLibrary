@@ -38,6 +38,7 @@ void *child2 (void *arg)
     pthread_setspecific (key, &temp);
     printf ("child2 中 pthread_getspecific(key)返回的指针为:0x%p\n", (int *)pthread_getspecific(key));
     printf ("利用 pthread_getspecific(key)打印 child2 线程中与key关联的整型变量temp 值:%d\n", *((int *)pthread_getspecific(key)));
+
 }
 
 

@@ -1,3 +1,4 @@
+
 /*
  * singleton.h
  *
