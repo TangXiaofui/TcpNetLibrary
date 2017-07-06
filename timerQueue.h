@@ -25,6 +25,7 @@ public:
   ~TimerQueue();
 
   TimerId addTimer(const TimerCallBack&cb ,TimeStamp when,double interval);
+  void addTimerInloop(Timer *timer);
   void cancel();
 
 private:

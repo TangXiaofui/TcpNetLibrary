@@ -86,13 +86,18 @@ TimerQueue::~TimerQueue()
 TimerId TimerQueue::addTimer(const TimerCallBack&cb ,TimeStamp when,double interval)
 {
   Timer *timer = new Timer(cb,when,interval);
+  loop_->runInLoop(std::bind(&TimerQueue::addTimerInloop,this,timer));
+  return TimerId(timer);
+}
+
+void TimerQueue::addTimerInloop(Timer *timer)
+{
   loop_->assertInLoopThread();
   bool earliestChange = insert(timer);
   if(earliestChange)
     {
       resetTimerfd(timerfd_,timer->expiration());
     }
-  return TimerId(timer);
 }
 
 void TimerQueue::cancel()

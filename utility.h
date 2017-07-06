@@ -34,7 +34,7 @@ namespace CurrentThread{
 }
 
 using TimerCallBack = std::function<void()>;
-
+using Functor = std::function<void()>;
 
 
 #endif /* UTILITY_H_ */
