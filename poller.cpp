@@ -23,9 +23,10 @@ Poller::~Poller()
 
 }
 
-void Poller::poll(int timeoutMs,ChannelList* activeChannels)
+TimeStamp Poller::poll(int timeoutMs,ChannelList* activeChannels)
 {
   int nums = ::poll(&*pollfds_.begin(),pollfds_.size(),timeoutMs);
+  TimeStamp now = TimeStamp::now();
   if(nums > 0){
       trace("%d event happen",nums);
       fillActiveChannels(nums,activeChannels);
@@ -36,7 +37,7 @@ void Poller::poll(int timeoutMs,ChannelList* activeChannels)
   else{
       error("Poller::poll error");
   }
-
+  return now;
 }
 
 void Poller::updateChannel(Channel *channel)

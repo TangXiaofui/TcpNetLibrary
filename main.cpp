@@ -20,24 +20,32 @@
 #include "channel.h"
 #include <sys/timerfd.h>
 #include <string.h>
+#include <memory>
+#include <set>
 
+int cnt = 0;
+EventLoop *globelLoop;
+
+void print(const char* msg)
+{
+  trace("time: %s  : msg %s",TimeStamp::now().toString().c_str(),msg);
+  if(cnt++ > 20)
+    {
+      globelLoop->quit();
+    }
+}
 
 int main(void) {
 
     EventLoop loop;
-    int timefd = ::timerfd_create(CLOCK_MONOTONIC,TFD_NONBLOCK|TFD_CLOEXEC);
-    Channel channel(&loop,timefd);
-    channel.setReadCallBack([&](){
-      info("timeout");
-      loop.quit();
-    });
-    channel.enableReading();
-    struct itimerspec howlong;
-    ::bzero(&howlong,sizeof(howlong));
-    howlong.it_value.tv_sec = 5;
-    ::timerfd_settime(timefd,0,&howlong,NULL);
-    loop.loop();
-    ::close(timefd);
+    globelLoop = &loop;
+    loop.runAfter(1, std::bind(print,"once1"));
+    loop.runAfter(1.5, std::bind(print,"once1.5"));
+    loop.runAfter(2.5, std::bind(print,"once2.5"));
+    loop.runAfter(5.5, std::bind(print,"once5.5"));
+    loop.runEvery(2,std::bind(print,"every2"));
+    loop.runEvery(3,std::bind(print,"every3"));
 
-    return EXIT_SUCCESS;
+    loop.loop();
+   return EXIT_SUCCESS;
 }

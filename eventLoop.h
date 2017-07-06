@@ -13,7 +13,7 @@
 #include "poller.h"
 #include <thread>
 #include <memory>
-
+#include "timerQueue.h"
 
 class EventLoop:public noncopyable{
 public:
@@ -25,6 +25,9 @@ public:
   void updateChannel(Channel*);
   void quit();
 
+  TimerId runAt(const TimeStamp& time,const TimerCallBack &cb);
+  TimerId runAfter(double delay, const TimerCallBack &cb);
+  TimerId runEvery(double interval,const TimerCallBack &cb);
 
   void assertInLoopThread();
   bool isInLoopThread();
@@ -35,9 +38,11 @@ private:
   const int kPollTimeMs = 10000;
   bool looping_;
   bool quit_;
-  ChannelList activeChannels_;
-
   std::shared_ptr<Poller> pollfds_;
+  ChannelList activeChannels_;
+  TimeStamp pollReturnTime_;
+  std::shared_ptr<TimerQueue> timerQueue_;//必须放到pollfd后面
+
 };
 
 

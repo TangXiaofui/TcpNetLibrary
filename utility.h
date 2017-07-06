@@ -33,6 +33,8 @@ namespace CurrentThread{
   long tid();
 }
 
+using TimerCallBack = std::function<void()>;
+
 
 
 #endif /* UTILITY_H_ */

@@ -9,8 +9,11 @@
 #define POLLER_H_
 
 #include "utility.h"
+#include "timeStamp.h"
 #include <vector>
 #include <map>
+
+
 
 class EventLoop;
 struct pollfd;
@@ -24,7 +27,7 @@ public:
   Poller(EventLoop *loop);
   ~Poller();
 
-  void poll(int timeoutMs,ChannelList* activeChannels);
+  TimeStamp poll(int timeoutMs,ChannelList* activeChannels);
   void updateChannel(Channel *channel);
 
   void assertInLoopThread();
