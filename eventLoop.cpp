@@ -95,7 +95,7 @@ void EventLoop::updateChannel(Channel* channel)
 void EventLoop::quit()
 {
   quit_ = true;
-  while(!isInLoopThread())
+  if(!isInLoopThread())
     {
       wakeup();
     }

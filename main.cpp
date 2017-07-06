@@ -19,19 +19,38 @@
 #include "eventLoop.h"
 #include "channel.h"
 #include "unitTest.h"
+#include "eventLoopThread.h"
 #include <sys/timerfd.h>
 #include <string.h>
 #include <memory>
 #include <set>
+
 
 EventLoop *globelLoop;
 
 
 int main(void) {
 
-   RunAllTests("testSafeTimeCall");
+
+   RunAllTests("testEventLoopThread");
 
    return EXIT_SUCCESS;
+}
+
+
+TEST(testEventLoopThread)
+{
+  printf("main %lx\n",CurrentThread::tid());
+  EventLoopThread loopThread;
+  EventLoop *loop = loopThread.startLoop();
+  loop->runInLoop([]{
+      printf("loop %lx\n",CurrentThread::tid());
+  });
+  loop->runAfter(3,[]{
+      printf("loop %lx\n",CurrentThread::tid());
+  });
+  sleep(4);
+  loop->quit();
 }
 
 
