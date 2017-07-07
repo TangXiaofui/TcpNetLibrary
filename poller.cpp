@@ -28,14 +28,14 @@ TimeStamp Poller::poll(int timeoutMs,ChannelList* activeChannels)
   int nums = ::poll(&*pollfds_.begin(),pollfds_.size(),timeoutMs);
   TimeStamp now = TimeStamp::now();
   if(nums > 0){
-      trace("%d event happen",nums);
+      log_trace("%d event happen",nums);
       fillActiveChannels(nums,activeChannels);
   }
   else if(nums == 0){
-      trace("nothing happen");
+      log_trace("nothing happen");
   }
   else{
-      error("Poller::poll error");
+      log_error("Poller::poll error");
   }
   return now;
 }
@@ -43,7 +43,7 @@ TimeStamp Poller::poll(int timeoutMs,ChannelList* activeChannels)
 void Poller::updateChannel(Channel *channel)
 {
   assertInLoopThread();
-  trace("fd = %d,event = %d",channel->fd(),channel->events());
+  log_trace("fd = %d,event = %d",channel->fd(),channel->events());
   if(channel->index() < 0)
     {
       assert(channels_.find(channel->fd()) == channels_.end());

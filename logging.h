@@ -18,12 +18,12 @@ do{				\
      }							\
 }while(0)
 
-#define trace(...) hlog(Logger::LogLevel::TRACE,__VA_ARGS__)
-#define debug(...) hlog(Logger::LogLevel::DEBUG,__VA_ARGS__)
-#define info(...)  hlog(Logger::LogLevel::INFO,__VA_ARGS__)
-#define warn(...)  hlog(Logger::LogLevel::WARN,__VA_ARGS__)
-#define error(...) hlog(Logger::LogLevel::ERROR,__VA_ARGS__)
-#define fatal(...) do { hlog(Logger::LogLevel::FATAL,__VA_ARGS__); exit(1);} while(0)
+#define log_trace(...) hlog(Logger::LogLevel::TRACE,__VA_ARGS__)
+#define log_debug(...) hlog(Logger::LogLevel::DEBUG,__VA_ARGS__)
+#define log_info(...)  hlog(Logger::LogLevel::INFO,__VA_ARGS__)
+#define log_warn(...)  hlog(Logger::LogLevel::WARN,__VA_ARGS__)
+#define log_error(...) hlog(Logger::LogLevel::ERROR,__VA_ARGS__)
+#define log_fatal(...) do { hlog(Logger::LogLevel::FATAL,__VA_ARGS__); exit(1);} while(0)
 
 
 

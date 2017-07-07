@@ -6,24 +6,28 @@
 // Description : Hello World in C, Ansi-style
 //============================================================================
 
-#include "UniqueLock.h"
-#include "Observable.h"
-#include "StockFactory.h"
-#include "singleton.h"
-#include "pthreadKey.h"
-#include <cassert>
-#include "utility.h"
+#include <sys/timerfd.h>
+#include <string.h>
+#include <memory>
+#include <set>
 #include <sys/syscall.h>
 #include <typeinfo>	//typeid
+#include <cassert>
+#include <unistd.h>
+
+//#include "UniqueLock.h"
+//#include "Observable.h"
+//#include "StockFactory.h"
+//#include "singleton.h"
+//#include "pthreadKey.h"
+#include "utility.h"
 #include "logging.h"
 #include "eventLoop.h"
 #include "channel.h"
 #include "unitTest.h"
 #include "eventLoopThread.h"
-#include <sys/timerfd.h>
-#include <string.h>
-#include <memory>
-#include <set>
+#include "netAddress.h"
+#include "acceptor.h"
 
 /*netlibrary，主要是框架设计（Reactor+io复用+线程池），优化策略（map，减小临界区,智能指针，RAII），可维护性，
 *		可扩展性（模块化设计，降低耦合），可靠性（容错，日志系统，代码覆盖率），代码逻辑清晰（注释)
@@ -35,9 +39,31 @@ EventLoop *globelLoop;
 int main(void) {
 
 
-   RunAllTests("testEventLoopThread");
+   RunAllTests("testAccept");
 
    return EXIT_SUCCESS;
+}
+
+
+void newConnCallBack(int connfd, const NetAddress &addr)
+{
+  log_trace("accept new connection from %s",addr.toHostPort().c_str());
+  ::write(connfd,"how are you?\n",13);
+  ::close(connfd);
+}
+TEST(testAccept)
+{
+    EventLoop loop;
+    Acceptor acceptor(&loop,NetAddress(10000));
+    acceptor.setNewConnectCallBack(newConnCallBack);
+    acceptor.listen();
+    loop.loop();
+}
+
+TEST(testNetAddress)
+{
+  NetAddress inet(32767);
+  std::cout << inet.toHostPort() << std::endl;
 }
 
 
@@ -62,7 +88,7 @@ TEST(testSafeTimeCall)
 {
   EventLoop loop;
   std::thread t([&]{
-    loop.runAfter(1.0,[]{ printf("%x run\n",CurrentThread::tid());});
+    loop.runAfter(1.0,[]{ printf("%lx run\n",CurrentThread::tid());});
     loop.quit();
   });
   loop.loop();
@@ -115,7 +141,7 @@ TEST(testQueue)
 int cnt = 0;
 void print(const char* msg)
 {
-  trace("time: %s  : msg %s",TimeStamp::now().toString().c_str(),msg);
+  log_trace("time: %s  : msg %s",TimeStamp::now().toString().c_str(),msg);
   if(cnt++ > 10)
     {
       globelLoop->quit();

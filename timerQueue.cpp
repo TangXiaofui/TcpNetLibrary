@@ -22,7 +22,7 @@ int createTimerfd()
   int fd = ::timerfd_create(CLOCK_MONOTONIC,TFD_CLOEXEC | TFD_NONBLOCK);
   if(fd < 0)
     {
-      error("create timerfd failed\n");
+      log_error("create timerfd failed\n");
     }
   return fd;
 }
@@ -50,7 +50,7 @@ void resetTimerfd(int timerfd,TimeStamp expiration)
   newValue.it_value = howMuchTimeFromNow(expiration);
   int ret = ::timerfd_settime(timerfd,0,&newValue,&oldValue);
   if(ret < 0)
-    error("timerfd_settime failed");
+    log_error("timerfd_settime failed");
 }
 
 //清除标志
@@ -58,10 +58,10 @@ void readTimerfd(int timerfd,TimeStamp now)
 {
   uint64_t howmany;
   ssize_t n = ::read(timerfd,&howmany,sizeof(howmany));
-  trace("TimerQueue::readTimerfd %ld at %s\n",howmany,now.toString().c_str());
+  log_trace("TimerQueue::readTimerfd %ld at %s\n",howmany,now.toString().c_str());
   if( n != sizeof howmany)
     {
-      error("TimerQueue::readTimerfd n = %d\n",n);
+      log_error("TimerQueue::readTimerfd n = %d\n",n);
     }
 }
 

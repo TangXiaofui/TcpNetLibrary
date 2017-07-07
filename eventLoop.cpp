@@ -17,7 +17,7 @@ static int createEvent()
 {
   int fd = ::eventfd(0,EFD_NONBLOCK| EFD_CLOEXEC);
   if(fd < 0)
-    fatal("create eventfd failed");
+    log_fatal("create eventfd failed");
   return fd;
 }
 
@@ -33,11 +33,11 @@ timerQueue_(new TimerQueue(this)),
 wakeupFd_(createEvent()),
 wakeupChannel_(new Channel(this,wakeupFd_))
 {
-  trace("EventLoop %x create in thread %x",this,threadId_);
+  log_trace("EventLoop %x create in thread %x",this,threadId_);
   //防止一个线程多次启动一个eventloop
   if(loopInThread_)
     {
-      fatal("this thread has an eventloop");
+      log_fatal("this thread has an eventloop");
     }
   else
     {
@@ -71,7 +71,7 @@ void EventLoop::loop()
       doPendingFunctors();
   }
 
-  trace("EventLoop %x stop loop",this);
+  log_trace("EventLoop %x stop loop",this);
   looping_ = false;
 }
 
@@ -121,7 +121,7 @@ bool EventLoop::isInLoopThread()
 
 void EventLoop::abortNotInLoopThread()
 {
-  fatal("eventloop %x is created in thread %x ,this thread is %x",this,threadId_,CurrentThread::tid());
+  log_fatal("eventloop %x is created in thread %x ,this thread is %x",this,threadId_,CurrentThread::tid());
 }
 
 
@@ -158,7 +158,7 @@ void EventLoop::wakeup()
   ssize_t n = ::write(wakeupFd_,&one,sizeof one);
   if(n != sizeof one)
     {
-      error("EventLoop write eventfd failed");
+      log_error("EventLoop write eventfd failed");
     }
 }
 
@@ -168,7 +168,7 @@ void EventLoop::handleRead()
   ssize_t n = ::read(wakeupFd_,&one,sizeof one);
     if(n != sizeof one)
       {
-        error("EventLoop read eventfd failed");
+	log_error("EventLoop read eventfd failed");
       }
 }
 
