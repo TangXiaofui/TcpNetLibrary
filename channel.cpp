@@ -34,6 +34,7 @@ Channel::~Channel()
 
 void Channel::handleEvent()
 {
+  //这是一个未打开的文件描述符
   if(revent_ & POLLNVAL)
     {
       warn("Chanel handleEvent pollnval");

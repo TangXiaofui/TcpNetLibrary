@@ -15,6 +15,8 @@
 #include <assert.h>
 #include <string.h>
 #include <stdint.h>
+
+
 int createTimerfd()
 {
   int fd = ::timerfd_create(CLOCK_MONOTONIC,TFD_CLOEXEC | TFD_NONBLOCK);
@@ -38,7 +40,7 @@ struct timespec howMuchTimeFromNow(TimeStamp when)
   return ts;
 }
 
-
+//更新超时时间，当有更早的超时事件插入队列时调用
 void resetTimerfd(int timerfd,TimeStamp expiration)
 {
   struct itimerspec newValue;
@@ -51,7 +53,7 @@ void resetTimerfd(int timerfd,TimeStamp expiration)
     error("timerfd_settime failed");
 }
 
-
+//清除标志
 void readTimerfd(int timerfd,TimeStamp now)
 {
   uint64_t howmany;
@@ -83,6 +85,7 @@ TimerQueue::~TimerQueue()
     }
 }
 
+//划分成下面两个函数的目的是为了支持其他线程调用该函数，保证线程安全
 TimerId TimerQueue::addTimer(const TimerCallBack&cb ,TimeStamp when,double interval)
 {
   Timer *timer = new Timer(cb,when,interval);
@@ -127,6 +130,7 @@ std::vector<TimerQueue::Entry> TimerQueue::getExpired(TimeStamp now)
   TimerList::iterator it = timers_.lower_bound(sentry);
   assert(it == timers_.end() || now < it->first);
   std::copy(timers_.begin(),it,std::back_inserter(expired));
+  //将超时的任务从队列中移除
   timers_.erase(timers_.begin(),it);
   return expired;
 }

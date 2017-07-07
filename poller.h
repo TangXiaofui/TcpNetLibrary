@@ -37,6 +37,7 @@ private:
 
   EventLoop *loop_;
   PollerList pollfds_;
+  //该map主要用于fillActiveChannels中快速查找
   ChannelMap channels_;
 
 };

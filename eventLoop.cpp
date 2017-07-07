@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 
+//尽力不用pipe，首先文件描述符多，并且缓冲区不确定
 static int createEvent()
 {
   int fd = ::eventfd(0,EFD_NONBLOCK| EFD_CLOEXEC);
@@ -20,7 +21,10 @@ static int createEvent()
   return fd;
 }
 
+
 __thread EventLoop* loopInThread_ = nullptr;
+
+//注意：初始化列表的顺序只于定义的顺序有关
 EventLoop::EventLoop():
 threadId_(CurrentThread::tid()),
 looping_(false),
@@ -139,6 +143,8 @@ void EventLoop::queueInloop(const Functor& cb)
     std::unique_lock<mutex> lock(mtx_);
     pendingFunctor_.push_back(cb);
   }
+
+
   //情况二是为了保证在执行doPendingFunctors时，其他线程又调用了queueInloop
   if(!isInLoopThread() || callingPendingFunctors_)
     {

@@ -28,6 +28,7 @@ EventLoop* EventLoopThread::startLoop()
 {
   thread_ = std::move(std::thread(std::bind(&EventLoopThread::threadFunc,this)));
   {
+    //本次临界区用于同步线程的创建
      std::unique_lock<std::mutex> lock(mtx_);
      while(loop_ == nullptr)
        cond_.wait(lock);

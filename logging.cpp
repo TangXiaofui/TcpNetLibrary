@@ -84,6 +84,7 @@ void Logger::record(int level,const char* file,int line,const char* funcName,con
   const time_t seconds = now_tv.tv_sec;
   struct tm t;
   localtime_r(&seconds,&t);
+  //打印tid的id或内存的地址需要统一，如%ld，或%lx
   pb += snprintf(pb,pe-pb,
   "%04d/%02d/%02d-%02d:%02d:%02d:%06d %x %s %s:%d  ",
   t.tm_year+1900,

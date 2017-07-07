@@ -25,7 +25,10 @@
 #include <memory>
 #include <set>
 
-
+/*netlibrary，主要是框架设计（Reactor+io复用+线程池），优化策略（map，减小临界区,智能指针，RAII），可维护性，
+*		可扩展性（模块化设计，降低耦合），可靠性（容错，日志系统，代码覆盖率），代码逻辑清晰（注释)
+*
+*/
 EventLoop *globelLoop;
 
 

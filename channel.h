@@ -27,6 +27,8 @@ public:
 
   int events() const;
   void setEvent(int revent);
+
+
   void setIndex(int idx);
   int index();
   int fd();
@@ -38,6 +40,7 @@ public:
 
 
 private:
+  //决定构造函数的初始化顺序
   void update();
   static const int kNoneEvent;
   static const int kReadEvent;

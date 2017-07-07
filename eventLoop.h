@@ -18,17 +18,24 @@
 
 class EventLoop:public noncopyable{
 public:
+  //所有using最后封装在一个头文件
   using ChannelList = std::vector<Channel*>;
   EventLoop();
   ~EventLoop();
 
   void loop();
+
+  //往poller注册channel
   void updateChannel(Channel*);
   void quit();
 
+  //用于事件分发，同一个线程同步调用，其他线程则放入vector等待事件处理后调用
   void runInLoop(const Functor& cb);
+
+  //放入vector等待调用
   void queueInloop(const Functor& cb);
 
+  //唤醒等待事件发生的pollfd
   void wakeup();
 
 
@@ -36,12 +43,18 @@ public:
   TimerId runAfter(double delay, const TimerCallBack &cb);
   TimerId runEvery(double interval,const TimerCallBack &cb);
 
+
+
   void assertInLoopThread();
   bool isInLoopThread();
 
 private:
   void abortNotInLoopThread();
+
+  //用于处理eventfd
   void handleRead();
+
+  //当处理完监听时间后，执行用户任务
   void doPendingFunctors();
 
 

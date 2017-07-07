@@ -20,7 +20,7 @@ Poller::Poller(EventLoop *loop)
 
 Poller::~Poller()
 {
-
+  //不清除fd，有生成fd的具体类自己管理fd
 }
 
 TimeStamp Poller::poll(int timeoutMs,ChannelList* activeChannels)
