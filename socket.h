@@ -30,6 +30,6 @@ private:
   const int fd_;
 };
 
-
+struct sockaddr_in getLocalAddr(int sockfd);
 
 #endif /* SOCKET_H_ */

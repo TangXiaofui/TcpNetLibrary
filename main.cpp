@@ -28,8 +28,9 @@
 #include "eventLoopThread.h"
 #include "netAddress.h"
 #include "acceptor.h"
+#include "tcpServer.h"
 
-/*netlibrary，主要是框架设计（Reactor+io复用+线程池），优化策略（map，减小临界区,智能指针，RAII），可维护性，
+/*netlibrary，主要是框架设计（Reactor+io复用+线程池），优化策略（map，减小临界区,智能指针，RAII,线程间的通讯选择），可维护性，
 *		可扩展性（模块化设计，降低耦合），可靠性（容错，日志系统，代码覆盖率），代码逻辑清晰（注释)
 *
 */
@@ -39,9 +40,34 @@ EventLoop *globelLoop;
 int main(void) {
 
 
-   RunAllTests("testAccept");
+   RunAllTests("testTcpServer");
 
    return EXIT_SUCCESS;
+}
+
+void onConnection(const TcpConnectionPtr& conn)
+{
+  if(conn->isConneted())
+    log_info("new Connection %s from %s",conn->getName().c_str(),conn->getPeerAddr().toHostPort().c_str());
+  else
+    {
+      log_info("connection %s is down",conn->getName().c_str());
+    }
+
+}
+void onMessage(const TcpConnectionPtr& conn, const char* buf, ssize_t len)
+{
+  log_info("onMessage : receive msg(%ld) : %s from peer %s",len,buf,conn->getPeerAddr().toHostPort().c_str());
+}
+
+TEST(testTcpServer)
+{
+  EventLoop loop;
+  TcpServer server(&loop,NetAddress(10000));
+  server.setConnectionCallBack(onConnection);
+  server.setMessageCallBack(onMessage);
+  server.start();
+  loop.loop();
 }
 
 

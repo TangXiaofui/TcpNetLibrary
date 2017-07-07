@@ -105,3 +105,15 @@ void Socket::setReuseAddr(bool flag)
 }
 
 
+struct sockaddr_in getLocalAddr(int sockfd)
+{
+  struct sockaddr_in addr;
+  socklen_t len = sizeof addr;
+  ::bzero(&addr,len);
+  if(::getsockname(sockfd,sockaddr_cast(&addr),&len) < 0)
+    {
+      log_error("getsockname fail");
+    }
+  return addr;
+
+}
