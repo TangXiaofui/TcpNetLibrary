@@ -34,11 +34,16 @@ namespace CurrentThread{
   long tid();
 }
 
+
+const char* strerror_tl(int savedErrno);
+
+
 using TimerCallBack = std::function<void()>;
 using Functor = std::function<void()>;
 class TcpConnection;
 using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
 using ConnectionCallBack = std::function<void (const TcpConnectionPtr&)>;
 using MessageCallBack = std::function<void (const TcpConnectionPtr&,const char* data,ssize_t len)>;
+using CloseCallBack = std::function<void (const TcpConnectionPtr&)>;
 
 #endif /* UTILITY_H_ */

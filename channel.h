@@ -24,18 +24,17 @@ public:
   void setReadCallBack(const EventCallback &cb );
   void setWriteCallBack(const EventCallback &cb);
   void setErrorCallBack(const EventCallback &cb);
+  void setCloseCallBack(const EventCallback &cb);
 
   int events() const;
   void setEvent(int revent);
-
-
-  void setIndex(int idx);
-  int index();
-  int fd();
-  bool isNoneEvent() const;
   void enableReading();
+  void disableAll();
 
-
+  int fd();
+  int index();
+  void setIndex(int idx);
+  bool isNoneEvent() const;
   EventLoop* ownerLoop();
 
 
@@ -51,11 +50,12 @@ private:
   int event_;
   int revent_;
   int index_;
+  bool eventHanding_;
 
   EventCallback readCallBack_;
   EventCallback writeCallBack_;
   EventCallback errorCallBack_;
-
+  EventCallback closeCallBack_;
 };
 
 

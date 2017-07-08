@@ -30,6 +30,7 @@ public:
 
 private:
   void newConnection(int sockfd, const NetAddress &addr);
+  void removeConnection(const TcpConnectionPtr& conn);
 
   using TcpConnectMap = std::map<std::string,TcpConnectionPtr>;
 

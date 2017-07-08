@@ -26,7 +26,8 @@ public:
   void loop();
 
   //往poller注册channel
-  void updateChannel(Channel*);
+  void updateChannel(Channel*channel);
+  void removeChannel(Channel* channel);
   void quit();
 
   //用于事件分发，同一个线程同步调用，其他线程则放入vector等待事件处理后调用

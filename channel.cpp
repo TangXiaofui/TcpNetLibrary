@@ -8,9 +8,10 @@
 
 
 #include "channel.h"
-#include <poll.h>
 #include "logging.h"
 #include "eventLoop.h"
+#include <poll.h>
+#include <assert.h>
 
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = POLLIN | POLLPRI;
@@ -22,23 +23,33 @@ Channel::Channel(EventLoop* loop,int fd)
  fd_(fd),
  event_(0),
  revent_(0),
- index_(-1)
+ index_(-1),
+ eventHanding_(false)
 {
 
 }
 
 Channel::~Channel()
 {
-
+  //出现错误能及时打印出错信息
+  assert(!eventHanding_);
 }
 
 void Channel::handleEvent()
 {
+  eventHanding_ = true;
   //这是一个未打开的文件描述符
   if(revent_ & POLLNVAL)
     {
       log_warn("Chanel handleEvent pollnval");
     }
+  if((revent_ & POLLHUP) && (revent_ & POLLIN))
+    {
+      log_warn("channel handle event pollup");
+      if(closeCallBack_)
+	closeCallBack_();
+    }
+
   if(revent_ & (POLLNVAL | POLLERR))
     {
       if(errorCallBack_)
@@ -54,7 +65,7 @@ void Channel::handleEvent()
       if(writeCallBack_)
 	writeCallBack_();
     }
-
+  eventHanding_ = false;
 }
 
 int Channel::events() const
@@ -91,6 +102,11 @@ void Channel::enableReading()
   event_ |= kReadEvent;
   update();
 }
+void Channel::disableAll()
+{
+  event_ = kNoneEvent;
+  update();
+}
 
 void Channel::setReadCallBack(const EventCallback &cb )
 {
@@ -104,6 +120,11 @@ void Channel::setWriteCallBack(const EventCallback &cb)
 void Channel::setErrorCallBack(const EventCallback &cb)
 {
   errorCallBack_ = cb;
+}
+
+void Channel::setCloseCallBack(const EventCallback &cb)
+{
+  closeCallBack_ = cb;
 }
 
 EventLoop* Channel::ownerLoop()

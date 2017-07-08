@@ -33,17 +33,23 @@ public:
 
     void setConnectedCallBack(const ConnectionCallBack& cb);
     void setMessageCallBack(const MessageCallBack& cb);
+    void setCloseCallBack(const CloseCallBack &cb);
 
     void connectEestablished();
+    void connectDestory();
 private:
-    enum StateE{ kConnecting,kConnected};
+    enum StateE{ kConnecting, kConnected, kDisconnected};
     void setState(StateE state);
     void handleRead();
+    void handleWrite();
+    void handleClose();
+    void handleError();
 
     EventLoop *loop_;
     std::string name_;
     StateE state_;
 
+    //用于管理sockfd生命周期
     std::shared_ptr<Socket> socket_;
     std::shared_ptr<Channel> channel_;
     NetAddress localAddr_;
@@ -51,6 +57,7 @@ private:
 
     ConnectionCallBack connectionCallBack_;
     MessageCallBack messageCallBack_;
+    CloseCallBack closeCallBack_;
 };
 
 

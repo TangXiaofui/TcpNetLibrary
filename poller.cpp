@@ -72,6 +72,27 @@ void Poller::updateChannel(Channel *channel)
     }
 }
 
+void Poller::removeChannel(Channel *channel)
+{
+  assertInLoopThread();
+  assert(channels_.find(channel->fd())!= channels_.end());
+  assert(channels_[channel->fd()] == channel);
+  assert(channel->isNoneEvent());
+
+  int idx = channel->index();
+  size_t n = channels_.erase(channel->fd());
+  assert(n == 1);
+  if(implicit_cast<size_t>(idx) == pollfds_.size()-1)
+    {
+      pollfds_.pop_back();
+    }
+  else
+    {
+      //可以优化，把要删除的和最后一个元素进行交换，然后pop_back
+      pollfds_.erase(pollfds_.begin()+idx);
+    }
+}
+
 void Poller::assertInLoopThread()
 {
   loop_->assertInLoopThread();

@@ -96,6 +96,13 @@ void EventLoop::updateChannel(Channel* channel)
   pollfds_->updateChannel(channel);
 }
 
+void EventLoop::removeChannel(Channel* channel)
+{
+  assert(channel->ownerLoop() == this);
+  assertInLoopThread();
+  pollfds_->removeChannel(channel);
+}
+
 void EventLoop::quit()
 {
   quit_ = true;

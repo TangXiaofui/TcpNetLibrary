@@ -30,9 +30,9 @@
 #include "acceptor.h"
 #include "tcpServer.h"
 
-/*netlibrary，主要是框架设计（Reactor+io复用+线程池），优化策略（map，减小临界区,智能指针，RAII,线程间的通讯选择），可维护性，
-*		可扩展性（模块化设计，降低耦合），可靠性（容错，日志系统，代码覆盖率），代码逻辑清晰（注释)
-*
+/*netlibrary，主要是框架设计（Reactor+io复用+线程池），优化策略（建立索引map，减小临界区,智能指针，RAII,线程间的通讯选择），可维护性(模块复用)，
+*		可扩展性（模块化设计，降低耦合），可靠性（容错，日志系统，代码覆盖率,错误处理(assert断言),线程安全），代码逻辑清晰（注释)
+*		使用调试工具进行各种测试，Valgrind strace  lsof tcpdump
 */
 EventLoop *globelLoop;
 

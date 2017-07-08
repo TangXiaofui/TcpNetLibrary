@@ -10,6 +10,7 @@
 #include "eventLoop.h"
 #include "acceptor.h"
 #include "logging.h"
+#include <assert.h>
 
 
 TcpServer::TcpServer(EventLoop *loop, const NetAddress &addr)
@@ -64,7 +65,20 @@ void TcpServer::newConnection(int sockfd, const NetAddress &addr)
   connects_[connName] = conn;
   conn->setConnectedCallBack(connectCallBack_);
   conn->setMessageCallBack(messageCallBack_);
+  conn->setCloseCallBack(std::bind(&TcpServer::removeConnection,this,std::placeholders::_1));
   conn->connectEestablished();
+}
+
+
+void TcpServer::removeConnection(const TcpConnectionPtr& conn)
+{
+  loop_->assertInLoopThread();
+  log_info("TcpServer %s removeConnection %s",name_.c_str(),conn->getName().c_str());
+  size_t n = connects_.erase(conn->getName());
+  assert(n == 1);
+
+  //必须要用queueinLoop
+  loop_->queueInloop(std::bind(&TcpConnection::connectDestory,conn));
 }
 
 
