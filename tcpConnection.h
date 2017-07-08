@@ -51,6 +51,7 @@ private:
     void handleError();
     void sendInloop(const std::string &message);
     void shutdownInloop();
+    void setTcpNoDelay(bool flag);
 
     EventLoop *loop_;
     std::string name_;

@@ -10,7 +10,9 @@
 #include "logging.h"
 #include <unistd.h>
 #include <string.h>
-
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
 
 using SA = struct sockaddr;
 const SA* sockaddr_cast(const struct sockaddr_in *addr)
@@ -111,7 +113,11 @@ void Socket::shutdownWrite()
       log_error("socket shutdownWrite");
     }
 }
-
+void Socket::setTcpNoDelay(bool flag)
+{
+  int optval = flag ? 1: 0;
+  ::setsockopt(fd_,IPPROTO_TCP,TCP_NODELAY,&optval,sizeof optval);
+}
 
 
 struct sockaddr_in getLocalAddr(int sockfd)

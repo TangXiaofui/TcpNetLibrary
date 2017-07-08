@@ -29,6 +29,12 @@
 #include "netAddress.h"
 #include "acceptor.h"
 #include "tcpServer.h"
+#include "ignoreSigPipe.h"
+#include "eventLoopThreadPool.h"
+
+
+IgnoreSigPipe initObj;
+
 
 /*netlibrary，主要是框架设计（Reactor+io复用+线程池），优化策略（建立索引map，减小临界区,智能指针，RAII,线程间的通讯选择），可维护性(模块复用)，
 *		可扩展性（模块化设计，降低耦合），可靠性（容错，日志系统，代码覆盖率,错误处理(assert断言),线程安全），代码逻辑清晰（注释)
@@ -50,25 +56,28 @@ int main(void) {
 void onConnection(const TcpConnectionPtr& conn)
 {
   if(conn->isConneted())
-    log_info("new Connection %s from %s",conn->getName().c_str(),conn->getPeerAddr().toHostPort().c_str());
+    log_info("new Connection tid:%lx %s from %s",CurrentThread::tid(),conn->getName().c_str(),conn->getPeerAddr().toHostPort().c_str());
   else
     {
-      log_info("connection %s is down",conn->getName().c_str());
+      log_info("connection tid:%lx %s is down",CurrentThread::tid(),conn->getName().c_str());
     }
 
 }
 void onMessage(const TcpConnectionPtr& conn,Buffer *buf,TimeStamp when)
 {
-  log_info("onMessage : receive msg(%zd) :  from peer %s",buf->readableBytes(),conn->getPeerAddr().toHostPort().c_str());
+  log_info("onMessage tid:%lx receive msg(%zd) :  from peer %s",CurrentThread::tid(),buf->readableBytes(),conn->getPeerAddr().toHostPort().c_str());
   conn->send(buf->retrieveAsString());
 }
 
 TEST(testTcpServer)
 {
+  Logger::getLogger().setLogLevel(Logger::LogLevel::INFO);
+  printf("main():pid = %lx\n",CurrentThread::tid());
   EventLoop loop;
   TcpServer server(&loop,NetAddress(10000));
   server.setConnectionCallBack(onConnection);
   server.setMessageCallBack(onMessage);
+  server.setThreadNum(3);
   server.start();
   loop.loop();
 }

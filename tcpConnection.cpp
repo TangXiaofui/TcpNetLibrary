@@ -231,3 +231,8 @@ void TcpConnection::shutdownInloop()
     }
 }
 
+void TcpConnection::setTcpNoDelay(bool flag)
+{
+  socket_->setTcpNoDelay(flag);
+}
+

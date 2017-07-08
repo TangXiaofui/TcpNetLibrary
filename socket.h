@@ -23,6 +23,7 @@ public:
   void bindAddress(const NetAddress& localAddr);
   void listen();
   int accept(NetAddress *peerAddr);
+  void setTcpNoDelay(bool flag);
 
   void setReuseAddr(bool flag);
 
