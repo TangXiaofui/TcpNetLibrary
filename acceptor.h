@@ -30,7 +30,7 @@ public:
 
 private:
 
-  void handleRead();
+  void handleRead(TimeStamp receiveTime);
   EventLoop *loop_;
   Socket acceptSock_;
   Channel acceptChannel_;

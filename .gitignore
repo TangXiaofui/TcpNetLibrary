@@ -3,3 +3,4 @@
 *.o
 .settings/
 MultiThreadSafe
+core

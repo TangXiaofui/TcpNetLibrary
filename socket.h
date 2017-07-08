@@ -26,6 +26,7 @@ public:
 
   void setReuseAddr(bool flag);
 
+  void shutdownWrite();
 private:
   const int fd_;
 };

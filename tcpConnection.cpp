@@ -24,7 +24,7 @@ localAddr_(localaddr),
 peerAddr_(peerAddr)
 {
   log_debug("TcpConnetion %s create at fd = %d",name.c_str(),sockfd);
-  channel_->setReadCallBack(std::bind(&TcpConnection::handleRead,this));
+  channel_->setReadCallBack(std::bind(&TcpConnection::handleRead,this,std::placeholders::_1));
   channel_->setWriteCallBack(std::bind(&TcpConnection::handleWrite, this));
   channel_->setCloseCallBack(std::bind(&TcpConnection::handleClose, this));
   channel_->setErrorCallBack(std::bind(&TcpConnection::handleError,this));
@@ -95,7 +95,7 @@ void TcpConnection::connectEestablished()
 void TcpConnection::connectDestory()
 {
   loop_->assertInLoopThread();
-  assert(state_ == kConnected);
+  assert(state_ == kConnected || state_ == kDisconnecting);
   setState(kDisconnected);
   channel_->disableAll();
 
@@ -106,12 +106,12 @@ void TcpConnection::connectDestory()
 
 }
 
-void TcpConnection::handleRead()
+void TcpConnection::handleRead(TimeStamp receiveTime)
 {
-  char buf[65536];
-  ssize_t ret = ::read(channel_->fd(),buf,sizeof buf);
+  int saveErrno = 0;
+  ssize_t ret = inputBuffer_.readFd(channel_->fd(),&saveErrno);
   if(ret > 0)
-    messageCallBack_(shared_from_this(),buf,ret);
+    messageCallBack_(shared_from_this(),&inputBuffer_,receiveTime);
   else if(ret == 0){
       handleClose();
   }
@@ -123,14 +123,36 @@ void TcpConnection::handleRead()
 
 void TcpConnection::handleWrite()
 {
-
+  loop_->assertInLoopThread();
+  if(channel_->isWriting()){
+      ssize_t n = ::write(channel_->fd(),outputBuffer_.peek(),outputBuffer_.readableBytes());
+      if(n > 0){
+	  outputBuffer_.retrieve(n);
+	  if(outputBuffer_.readableBytes() == 0)
+	    {
+	      channel_->disableWriting();
+	      if(state_ == kDisconnecting){
+		  shutdownInloop();
+	      }
+	    }
+	  else{
+	      log_trace("I am going write more data");
+	  }
+      }
+      else{
+	  log_error("TcpConnect handleWrite");
+      }
+  }
+  else{
+      log_trace("connection is down,no more writing");
+  }
 }
 
 void TcpConnection::handleClose()
 {
    loop_->assertInLoopThread();
    log_info("tcpConnection handleClose");
-   assert(state_ == kConnected);
+   assert(state_ == kConnected || state_ == kDisconnecting);
    channel_->disableAll();
    closeCallBack_(shared_from_this());
 }
@@ -141,5 +163,71 @@ void TcpConnection::handleError()
   socklen_t optlen = sizeof optlen;
   int ret = ::getsockopt(channel_->fd(),SOL_SOCKET, SO_ERROR, &optval, &optlen);
   log_error("TcpConnect handleError %s ,socket error: %s",name_.c_str(),strerror_tl(ret < 0 ? errno : optval));
+}
+
+
+void TcpConnection::send(const std::string &message)
+{
+  if(state_ == kConnected)
+    {
+      if(loop_->isInLoopThread())
+	{
+	  sendInloop(message);
+	}
+      else{
+	  loop_->runInLoop(std::bind(&TcpConnection::sendInloop,this,message));
+      }
+    }
+}
+
+void TcpConnection::shutdown()
+{
+  if(state_ == kConnected)
+    {
+      setState(kDisconnecting);
+      loop_->runInLoop(std::bind(&TcpConnection::shutdownInloop,this));
+    }
+}
+
+void TcpConnection::sendInloop(const std::string &message)
+{
+  loop_->assertInLoopThread();
+  ssize_t nWrote = 0;
+  if(!channel_->isWriting() && outputBuffer_.readableBytes() == 0)
+    {
+      nWrote = ::write(channel_->fd(),message.c_str(),message.length());
+      if(nWrote >= 0)
+	{
+	  if(implicit_cast<size_t>(nWrote) < message.length())
+	    {
+	      log_error("I am going to write more date");
+	    }
+	}
+      else{
+	  nWrote = 0;
+	  if(errno != EWOULDBLOCK)
+	    {
+	      log_error("TcpConnect sendInloop");
+	    }
+      }
+    }
+  assert(nWrote >= 0);
+  if(implicit_cast<size_t>(nWrote) < message.size())
+    {
+      outputBuffer_.append(message.data()+nWrote,message.length()-nWrote);
+      if(!channel_->isWriting())
+	{
+	  channel_->enableWriting();
+	}
+    }
+}
+
+void TcpConnection::shutdownInloop()
+{
+  loop_->assertInLoopThread();
+  if(!channel_->isWriting())
+    {
+      socket_->shutdownWrite();
+    }
 }
 

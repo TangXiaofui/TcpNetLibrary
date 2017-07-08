@@ -35,7 +35,7 @@ Channel::~Channel()
   assert(!eventHanding_);
 }
 
-void Channel::handleEvent()
+void Channel::handleEvent(TimeStamp receiveTime)
 {
   eventHanding_ = true;
   //这是一个未打开的文件描述符
@@ -58,7 +58,7 @@ void Channel::handleEvent()
   if(revent_ & (POLLIN | POLLPRI | POLLRDHUP))
     {
       if(readCallBack_)
-	readCallBack_();
+	readCallBack_(receiveTime);
     }
   if(revent_ & (POLLOUT))
     {
@@ -108,7 +108,23 @@ void Channel::disableAll()
   update();
 }
 
-void Channel::setReadCallBack(const EventCallback &cb )
+void Channel::enableWriting()
+{
+  event_ |= kWriteEvent;
+  update();
+}
+void Channel::disableWriting()
+{
+  event_ &= ~kWriteEvent;
+  update();
+}
+bool Channel::isWriting()
+{
+  return event_ & kWriteEvent;
+}
+
+
+void Channel::setReadCallBack(const ReadEventCallback &cb )
 {
   readCallBack_ = cb;
 }

@@ -7,7 +7,10 @@
 
 #ifndef UTILITY_H_
 #define UTILITY_H_
+
 #include <memory>
+
+
 
 using namespace std;
 class copyable{
@@ -43,7 +46,10 @@ using Functor = std::function<void()>;
 class TcpConnection;
 using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
 using ConnectionCallBack = std::function<void (const TcpConnectionPtr&)>;
-using MessageCallBack = std::function<void (const TcpConnectionPtr&,const char* data,ssize_t len)>;
+
+class TimeStamp;
+class Buffer;
+using MessageCallBack = std::function<void (const TcpConnectionPtr&, Buffer*, TimeStamp)>;
 using CloseCallBack = std::function<void (const TcpConnectionPtr&)>;
 
 #endif /* UTILITY_H_ */

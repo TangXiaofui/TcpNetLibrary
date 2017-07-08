@@ -72,7 +72,7 @@ channel_(loop,timerfd_),
 timers_()
 {
   channel_.setReadCallBack(
-      std::bind(&TimerQueue::handleRead,this));
+      std::bind(&TimerQueue::handleRead,this,std::placeholders::_1));
   channel_.enableReading();
 }
 
@@ -109,7 +109,7 @@ void TimerQueue::cancel()
 }
 
 
-void TimerQueue::handleRead()
+void TimerQueue::handleRead(TimeStamp receiveTime)
 {
   loop_->assertInLoopThread();
   TimeStamp now(TimeStamp::now());

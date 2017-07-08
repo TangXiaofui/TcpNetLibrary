@@ -12,6 +12,7 @@
 #include "channel.h"
 #include "socket.h"
 #include "netAddress.h"
+#include "buffer.h"
 #include <memory>
 #include <string>
 #include <functional>
@@ -37,13 +38,19 @@ public:
 
     void connectEestablished();
     void connectDestory();
+
+    void send(const std::string &message);
+    void shutdown();
+
 private:
-    enum StateE{ kConnecting, kConnected, kDisconnected};
+    enum StateE{ kConnecting, kConnected, kDisconnecting ,kDisconnected};
     void setState(StateE state);
-    void handleRead();
+    void handleRead(TimeStamp receiveTime);
     void handleWrite();
     void handleClose();
     void handleError();
+    void sendInloop(const std::string &message);
+    void shutdownInloop();
 
     EventLoop *loop_;
     std::string name_;
@@ -54,7 +61,8 @@ private:
     std::shared_ptr<Channel> channel_;
     NetAddress localAddr_;
     NetAddress peerAddr_;
-
+    Buffer inputBuffer_;
+    Buffer outputBuffer_;
     ConnectionCallBack connectionCallBack_;
     MessageCallBack messageCallBack_;
     CloseCallBack closeCallBack_;

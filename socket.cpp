@@ -104,6 +104,15 @@ void Socket::setReuseAddr(bool flag)
   ::setsockopt(fd_,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof optval);
 }
 
+void Socket::shutdownWrite()
+{
+  if(::shutdown(fd_,SHUT_WR) < 0)
+    {
+      log_error("socket shutdownWrite");
+    }
+}
+
+
 
 struct sockaddr_in getLocalAddr(int sockfd)
 {
@@ -117,3 +126,5 @@ struct sockaddr_in getLocalAddr(int sockfd)
   return addr;
 
 }
+
+

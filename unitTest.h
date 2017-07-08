@@ -36,7 +36,7 @@ bool RegisterTest(const char* name,void (*func)())
 
 void RunAllTests(const char* match)
 {
-    int nums = 0;
+     int nums = 0;
     if(tests->size())
     {
 	    for(size_t i = 0 ; i < tests->size() ; ++i)

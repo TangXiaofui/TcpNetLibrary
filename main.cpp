@@ -45,6 +45,8 @@ int main(void) {
    return EXIT_SUCCESS;
 }
 
+
+
 void onConnection(const TcpConnectionPtr& conn)
 {
   if(conn->isConneted())
@@ -55,9 +57,10 @@ void onConnection(const TcpConnectionPtr& conn)
     }
 
 }
-void onMessage(const TcpConnectionPtr& conn, const char* buf, ssize_t len)
+void onMessage(const TcpConnectionPtr& conn,Buffer *buf,TimeStamp when)
 {
-  log_info("onMessage : receive msg(%ld) : %s from peer %s",len,buf,conn->getPeerAddr().toHostPort().c_str());
+  log_info("onMessage : receive msg(%zd) :  from peer %s",buf->readableBytes(),conn->getPeerAddr().toHostPort().c_str());
+  conn->send(buf->retrieveAsString());
 }
 
 TEST(testTcpServer)

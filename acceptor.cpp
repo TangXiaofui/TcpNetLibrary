@@ -30,7 +30,7 @@ listenning_(false)
 {
   acceptSock_.setReuseAddr(true);
   acceptSock_.bindAddress(listenAddr);
-  acceptChannel_.setReadCallBack(std::bind(&Acceptor::handleRead,this));
+  acceptChannel_.setReadCallBack(std::bind(&Acceptor::handleRead,this,std::placeholders::_1));
 }
 
 void Acceptor::setNewConnectCallBack(const newConnCallBack &cb)
@@ -52,7 +52,7 @@ void Acceptor::listen()
 }
 
 
-void Acceptor::handleRead()
+void Acceptor::handleRead(TimeStamp receiveTime)
 {
   loop_->assertInLoopThread();
   NetAddress peerAddr(0);

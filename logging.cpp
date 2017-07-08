@@ -86,7 +86,7 @@ void Logger::record(int level,const char* file,int line,const char* funcName,con
   localtime_r(&seconds,&t);
   //打印tid的id或内存的地址需要统一，如%ld，或%lx
   pb += snprintf(pb,pe-pb,
-  "%04d/%02d/%02d-%02d:%02d:%02d:%06d %x %s %s:%d  ",
+  "%04d/%02d/%02d-%02d:%02d:%02d:%06d %lx %s %s:%d  ",
   t.tm_year+1900,
   t.tm_mon+1,
   t.tm_mday,
