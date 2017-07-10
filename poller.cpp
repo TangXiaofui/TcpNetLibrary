@@ -63,11 +63,11 @@ void Poller::updateChannel(Channel *channel)
       int idx = channel->index();
       assert(idx >= 0 && idx < static_cast<int>(pollfds_.size()));
       struct pollfd& pfd = pollfds_[idx];
-      assert(pfd.fd == channel->fd() || pfd.fd == -1);
+      assert(pfd.fd == channel->fd() || pfd.fd == -channel->fd()-1);
       pfd.events = static_cast<short>(channel->events());
       pfd.revents = 0;
       if(channel->isNoneEvent()){
-	  pfd.fd = -1;
+	  pfd.fd = -channel->fd()-1;
       }
     }
 }
@@ -80,6 +80,7 @@ void Poller::removeChannel(Channel *channel)
   assert(channel->isNoneEvent());
 
   int idx = channel->index();
+  assert(0 <= idx && idx < static_cast<int>(pollfds_.size()));
   size_t n = channels_.erase(channel->fd());
   assert(n == 1);
   if(implicit_cast<size_t>(idx) == pollfds_.size()-1)
@@ -89,7 +90,16 @@ void Poller::removeChannel(Channel *channel)
   else
     {
       //可以优化，把要删除的和最后一个元素进行交换，然后pop_back
-      pollfds_.erase(pollfds_.begin()+idx);
+
+      //pollfds_.erase(pollfds_.begin()+idx);
+      int channelAtEnd = pollfds_.back().fd;
+      if(channelAtEnd < 0)
+	{
+	  channelAtEnd = -channelAtEnd-1;
+	}
+      iter_swap(pollfds_.begin()+idx,pollfds_.end()-1);
+      channels_[channelAtEnd]->setIndex(idx);
+      pollfds_.pop_back();
     }
 }
 

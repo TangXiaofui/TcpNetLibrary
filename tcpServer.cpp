@@ -93,8 +93,11 @@ void TcpServer::setThreadNum(int numThreads)
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
 {
   loop_->assertInLoopThread();
+  log_info("TcpServer removeConnectionInLoop %s",conn->getName().c_str());
   size_t n = connects_.erase(conn->getName());
-  assert(n == 1);
+//  assert(n == 1);
+  if(n == 0)
+    return;
   EventLoop* ioLoop = conn->getEventLoop();
   ioLoop->queueInloop(std::bind(&TcpConnection::connectDestory,conn));
 }

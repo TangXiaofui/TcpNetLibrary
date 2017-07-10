@@ -45,7 +45,6 @@ EventLoop *globelLoop;
 
 int main(void) {
 
-
    RunAllTests("testTcpServer");
 
    return EXIT_SUCCESS;
@@ -71,13 +70,14 @@ void onMessage(const TcpConnectionPtr& conn,Buffer *buf,TimeStamp when)
 
 TEST(testTcpServer)
 {
-  Logger::getLogger().setLogLevel(Logger::LogLevel::INFO);
+  Logger::getLogger().setLogLevel(Logger::LogLevel::TRACE);
+  Logger::getLogger().setFileName("log");
   printf("main():pid = %lx\n",CurrentThread::tid());
   EventLoop loop;
   TcpServer server(&loop,NetAddress(10000));
   server.setConnectionCallBack(onConnection);
   server.setMessageCallBack(onMessage);
-  server.setThreadNum(3);
+//  server.setThreadNum(3);
   server.start();
   loop.loop();
 }
@@ -196,4 +196,16 @@ TEST(testTimer)
   loop.runEvery(2,std::bind(print,"every2"));
   loop.runEvery(3,std::bind(print,"every3"));
   loop.loop();
+}
+
+TEST(testLog)
+{
+  Logger::getLogger().setLogLevel(Logger::LogLevel::TRACE);
+  Logger::getLogger().setFileName("log");
+  int num = 100;
+  for(int i = 0 ; i < num;i++)
+    {
+      log_error("testlog");
+    }
+  log_error("i = %d",num);
 }

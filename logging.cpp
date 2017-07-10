@@ -123,9 +123,11 @@ void Logger::record(int level,const char* file,int line,const char* funcName,con
 void Logger::RotateFile()
 {
   time_t nowTime = time(nullptr);
-  if(fileName_.size() == 0 || (nowTime - timezone)/rotateInterval_ != (lastRotate_ - timezone)/rotateInterval_)
+  if(fileName_.size() == 0 || (nowTime - timezone)/rotateInterval_ == (lastRotate_ - timezone)/rotateInterval_)
     return;
 
+  if( (nowTime - timezone)/rotateInterval_ == (lastRotate_ - timezone)/rotateInterval_)
+    return ;
   lastRotate_ = nowTime;
   struct tm ntm;
   localtime_r(&nowTime,&ntm);
@@ -157,7 +159,7 @@ void Logger::setFileName(const std::string& fileName)
 {
   if(fileName.size() != 0)
     fileName_ = fileName;
-  int fd = open(fileName_.c_str(),O_APPEND | O_CREAT | O_CLOEXEC,DEFFILEMODE);
+  int fd = open(fileName_.c_str(),O_APPEND | O_CREAT | O_WRONLY | O_CLOEXEC,DEFFILEMODE);
   if(fd < 0)
     {
       fprintf(stderr,"open %s failed, %s  %d\n",__FILE__,__func__,__LINE__);
