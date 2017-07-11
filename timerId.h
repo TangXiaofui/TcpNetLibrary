@@ -14,7 +14,7 @@ class Timer;
 
 class TimerId:public copyable{
 public:
-  TimerId(Timer *timer);
+  TimerId(Timer *timer = nullptr);
 
 
 private:

@@ -9,18 +9,10 @@
 #include "acceptor.h"
 #include "eventLoop.h"
 #include "logging.h"
-#include <sys/socket.h>
 #include <unistd.h>
 
-int createNoBlockSock()
-{
-  int sockfd = ::socket(AF_INET,SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC,IPPROTO_TCP);
-  if(sockfd < 0)
-    {
-      log_fatal("create nonblock socket failed");
-    }
-  return sockfd;
-}
+
+extern int createNoBlockSock();
 
 Acceptor::Acceptor(EventLoop *loop, const NetAddress &listenAddr)
 :loop_(loop),

@@ -37,6 +37,10 @@ namespace CurrentThread{
   long tid();
 }
 
+int createNoBlockSock();
+using SA = struct sockaddr;
+const SA* sockaddr_cast(const struct sockaddr_in *addr);
+SA* sockaddr_cast(struct sockaddr_in *addr);
 
 const char* strerror_tl(int savedErrno);
 
