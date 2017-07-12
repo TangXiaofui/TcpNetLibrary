@@ -42,7 +42,7 @@ private:
   void handleWrite();
   void handleError();
   void retry(int sockfd);
-  void removeAndResetChannel();
+  int removeAndResetChannel();
   void resetChannel();
 
   EventLoop *loop_;

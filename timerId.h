@@ -14,12 +14,13 @@ class Timer;
 
 class TimerId:public copyable{
 public:
-  TimerId(Timer *timer = nullptr);
+  TimerId(Timer *timer = nullptr,int64_t seq = 0);
 
 
+  friend class TimerQueue;
 private:
-  int64_t sequence_;
   Timer* timer_;
+  int64_t sequence_;
 };
 
 

@@ -31,6 +31,7 @@
 #include "tcpServer.h"
 #include "ignoreSigPipe.h"
 #include "eventLoopThreadPool.h"
+#include "connector.h"
 
 
 IgnoreSigPipe initObj;
@@ -45,12 +46,27 @@ EventLoop *globelLoop;
 
 int main(void) {
 
-   RunAllTests("testTcpServer");
+   RunAllTests("testConnector");
 
    return EXIT_SUCCESS;
 }
 
+void connectionCallback(int sockfd)
+{
+  printf("connected.\n");
+  globelLoop->quit();
 
+}
+
+TEST(testConnector)
+{
+  EventLoop loop;
+  globelLoop = &loop;
+  Connector conn(&loop,NetAddress("127.0.0.1",10000));
+  conn.setNewConnectionCallBack(connectionCallback);
+  conn.start();
+  loop.loop();
+}
 
 void onConnection(const TcpConnectionPtr& conn)
 {
@@ -185,16 +201,25 @@ void print(const char* msg)
       globelLoop->quit();
     }
 }
+
+TimerId toCancel;
+void cancelSelf()
+{
+  print("cancel self\n");
+  globelLoop->cancel(toCancel);
+}
+
 TEST(testTimer)
 {
   EventLoop loop;
   globelLoop = &loop;
-  loop.runAfter(1, std::bind(print,"once1"));
-  loop.runAfter(1.5, std::bind(print,"once1.5"));
-  loop.runAfter(2.5, std::bind(print,"once2.5"));
-  loop.runAfter(5.5, std::bind(print,"once5.5"));
-  loop.runEvery(2,std::bind(print,"every2"));
-  loop.runEvery(3,std::bind(print,"every3"));
+//  loop.runAfter(1, std::bind(print,"once1"));
+//  loop.runAfter(1.5, std::bind(print,"once1.5"));
+//  loop.runAfter(2.5, std::bind(print,"once2.5"));
+//  loop.runAfter(5.5, std::bind(print,"once5.5"));
+//  loop.runEvery(2,std::bind(print,"every2"));
+//  loop.runEvery(3,std::bind(print,"every3"));
+  toCancel = loop.runEvery(1,cancelSelf);
   loop.loop();
 }
 

@@ -26,11 +26,14 @@ public:
 
   TimerId addTimer(const TimerCallBack&cb ,TimeStamp when,double interval);
   void addTimerInloop(Timer *timer);
-  void cancel();
+  void cancelInLoop(TimerId timerId);
+  void cancel(TimerId);
 
 private:
   using Entry = std::pair<TimeStamp,Timer*>;
   using TimerList = std::set<Entry>;
+  using ActiveTimer = std::pair<Timer*,int64_t>;
+  using ActiveTimerSet = std::set<ActiveTimer>;
 
   void handleRead(TimeStamp receiveTime);
   std::vector<Entry> getExpired(TimeStamp now);
@@ -42,6 +45,10 @@ private:
   const int timerfd_;
   Channel channel_;
   TimerList timers_;
+
+  bool callingExpiredTimers_;
+  ActiveTimerSet activeTiemrs_;
+  ActiveTimerSet cancelingTimers_;
 };
 
 

@@ -8,8 +8,9 @@
 #include "timerId.h"
 
 
-TimerId::TimerId(Timer *timer)
-:timer_(timer)
+TimerId::TimerId(Timer *timer,int64_t seq)
+:timer_(timer),
+sequence_(seq)
 {
 
 }

@@ -33,5 +33,14 @@ private:
 };
 
 struct sockaddr_in getLocalAddr(int sockfd);
+struct sockaddr_in getPeerAddr(int sockfd);
+
+int createNoBlockSock();
+using SA = struct sockaddr;
+const SA* sockaddr_cast(const struct sockaddr_in *addr);
+SA* sockaddr_cast(struct sockaddr_in *addr);
+int getSocketError(int sockfd);
+bool isSelfConnect(int sockfd);
+
 
 #endif /* SOCKET_H_ */

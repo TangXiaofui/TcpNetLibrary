@@ -44,7 +44,7 @@ public:
   TimerId runAfter(double delay, const TimerCallBack &cb);
   TimerId runEvery(double interval,const TimerCallBack &cb);
 
-
+  void cancel(TimerId timerId);
 
   void assertInLoopThread();
   bool isInLoopThread();

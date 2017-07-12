@@ -88,6 +88,10 @@ TimerId EventLoop::runEvery(double interval,const TimerCallBack &cb)
   return timerQueue_->addTimer(cb,addTime(TimeStamp::now(),interval),interval);
 }
 
+void EventLoop::cancel(TimerId timerId)
+{
+  timerQueue_->cancel(timerId);
+}
 
 void EventLoop::updateChannel(Channel* channel)
 {
