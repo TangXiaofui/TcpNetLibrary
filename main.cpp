@@ -23,7 +23,6 @@
 #include "utility.h"
 #include "logging.h"
 #include "eventLoop.h"
-#include "channel.h"
 #include "unitTest.h"
 #include "eventLoopThread.h"
 #include "netAddress.h"
@@ -46,7 +45,11 @@ EventLoop *globelLoop;
 
 int main(void) {
 
-   RunAllTests("testConnector");
+#ifdef USE_EPOLLER
+  printf("use epoller");
+#endif
+
+   RunAllTests("testTcpServer");
 
    return EXIT_SUCCESS;
 }
@@ -87,7 +90,7 @@ void onMessage(const TcpConnectionPtr& conn,Buffer *buf,TimeStamp when)
 TEST(testTcpServer)
 {
   Logger::getLogger().setLogLevel(Logger::LogLevel::TRACE);
-  Logger::getLogger().setFileName("log");
+//  Logger::getLogger().setFileName("log");
   printf("main():pid = %lx\n",CurrentThread::tid());
   EventLoop loop;
   TcpServer server(&loop,NetAddress(10000));

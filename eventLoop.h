@@ -10,7 +10,11 @@
 
 #include "utility.h"
 #include "channel.h"
+#ifndef USE_EPOLLER
 #include "poller.h"
+#else
+#include "epoller.h"
+#endif
 #include "timerQueue.h"
 #include <thread>
 #include <memory>
@@ -65,7 +69,11 @@ private:
   bool quit_;
   bool callingPendingFunctors_;
 
+#ifndef USE_EPOLLER
   std::shared_ptr<Poller> pollfds_;
+#else
+  std::shared_ptr<Epoller> pollfds_;
+#endif
   ChannelList activeChannels_;
   TimeStamp pollReturnTime_;
   std::shared_ptr<TimerQueue> timerQueue_;//必须放到pollfd后面

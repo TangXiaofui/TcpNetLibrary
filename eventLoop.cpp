@@ -7,7 +7,7 @@
 #include "eventLoop.h"
 #include "assert.h"
 #include "logging.h"
-#include <poll.h>
+//#include <poll.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
 
@@ -28,7 +28,11 @@ __thread EventLoop* loopInThread_ = nullptr;
 EventLoop::EventLoop():
 threadId_(CurrentThread::tid()),
 looping_(false),
+#ifndef USE_EPOLLER
 pollfds_(new Poller(this)),
+#else
+pollfds_(new Epoller(this)),
+#endif
 timerQueue_(new TimerQueue(this)),
 wakeupFd_(createEvent()),
 wakeupChannel_(new Channel(this,wakeupFd_))
