@@ -16,4 +16,20 @@ webbench
 cmd  ./webbench -1 -c 100 --get -t 60 http://127.0.0.1:8000/
 
 
+Benchmarking: GET http://127.0.0.1:8000/
+1000 clients, running 60 sec.
+
+muduo
+	Speed=591320 pages/min, 1871845 bytes/sec.
+	Requests: 591107 susceed, 213 failed.
+
+tcpNetLibrary
+	Speed=434154 pages/min, 1359236 bytes/sec.
+	Requests: 433798 susceed, 356 failed.
+
+libevent
+	Speed=918678 pages/min, 18404202 bytes/sec.
+	Requests: 918678 susceed, 0 failed.
+
+
 	并发数受到最大文件描述符的限制，socket BUF，数据量大小，读写文件速度

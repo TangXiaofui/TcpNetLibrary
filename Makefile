@@ -1,4 +1,4 @@
-CXXFLAGS = -g -std=c++11 -Wall -fmessage-length=0 -pthread -lpthread -DUSE_EPOLLER1
+CXXFLAGS = -O2 -std=c++11 -Wall -fmessage-length=0 -pthread -lpthread -DUSE_EPOLLER1
 
 OBJS =		main.o UniqueLock.o Observable.o StockFactory.o singleton.o \
 pthreadKey.o utility.o eventLoop.o logging.o channel.o poller.o timeStamp.o \
