@@ -101,3 +101,8 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
   EventLoop* ioLoop = conn->getEventLoop();
   ioLoop->queueInloop(std::bind(&TcpConnection::connectDestory,conn));
 }
+
+EventLoop* TcpServer::getLoop() const
+{
+  return loop_;
+}

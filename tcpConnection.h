@@ -40,7 +40,10 @@ public:
     void connectDestory();
 
     void send(const std::string &message);
+    void send(Buffer* message);
     void shutdown();
+
+    template<class T> T& getContext() { return context_.context<T>(); }
 
 private:
     enum StateE{ kConnecting, kConnected, kDisconnecting ,kDisconnected};
@@ -67,6 +70,7 @@ private:
     ConnectionCallBack connectionCallBack_;
     MessageCallBack messageCallBack_;
     CloseCallBack closeCallBack_;
+    AutoContext context_;
 };
 
 

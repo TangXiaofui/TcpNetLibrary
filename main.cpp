@@ -14,6 +14,7 @@
 #include <typeinfo>	//typeid
 #include <cassert>
 #include <unistd.h>
+#include <assert.h>
 
 //#include "UniqueLock.h"
 //#include "Observable.h"
@@ -31,6 +32,8 @@
 #include "ignoreSigPipe.h"
 #include "eventLoopThreadPool.h"
 #include "connector.h"
+#include "http/httpContext.h"
+#include "http/httpServer_test.h"
 
 
 IgnoreSigPipe initObj;
@@ -45,13 +48,34 @@ EventLoop *globelLoop;
 
 int main(void) {
 
-#ifdef USE_EPOLLER
-  printf("use epoller");
-#endif
 
-   RunAllTests("testTcpServer");
+   RunAllTests("testHttp");
 
    return EXIT_SUCCESS;
+}
+
+TEST(testHttp)
+{
+  testHttpServer();
+}
+
+TEST(testHttpRequest)
+{
+  Buffer input;
+  input.append("GET /index.html HTTP/1.1\r\n"
+      "Host:www.test.com\r\n"
+      "\r\n");
+
+  HttpContext context;
+  assert(context.parseRequest(&input,TimeStamp::now()));
+
+  const HttpRequest& request = context.request();
+  assert(request.getMethod() == HttpRequest::kGet);
+  assert(request.getPath() == string("/index.html"));
+  assert(request.getVersion() == HttpRequest::kHttp11);
+  assert(request.getHeader("Host") == string("www.test.com"));
+  assert(request.getHeader("User-Agent") == string(""));
+
 }
 
 void connectionCallback(int sockfd)

@@ -28,6 +28,7 @@ public:
   void start();
   void setConnectionCallBack(const ConnectionCallBack& cb);
   void setMessageCallBack(const MessageCallBack& cb);
+  EventLoop* getLoop() const ;
 
   void setThreadNum(int numThreads);
 

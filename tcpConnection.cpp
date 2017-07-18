@@ -180,6 +180,13 @@ void TcpConnection::send(const std::string &message)
     }
 }
 
+void TcpConnection::send(Buffer* message)
+{
+  string msg(message->peek(), message->readableBytes());
+  message->retrieveAll();
+  send(msg);
+}
+
 void TcpConnection::shutdown()
 {
   if(state_ == kConnected)

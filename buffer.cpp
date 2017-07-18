@@ -11,6 +11,8 @@
 #include <assert.h>
 #include <sys/uio.h>
 
+const char Buffer::kCRLF[] = "\r\n";
+
 Buffer::Buffer()
 :buffer_(kCheapPrepared + kInitialSize),
  readIndex_(kCheapPrepared),
@@ -183,5 +185,13 @@ void  Buffer::makeSpace(size_t len)
       writeIndex_ = readIndex_ + readable;
       assert(readable == readableBytes());
   }
+}
+
+
+const char* Buffer::findCRLF() const
+{
+  const char* crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF+2);
+  return crlf == beginWrite() ? NULL : crlf;
+
 }
 

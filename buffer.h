@@ -44,6 +44,9 @@ public:
   void hasWriten(size_t len);
   void prepend(const void *data, size_t len);
 
+  const char* findCRLF() const;
+
+
   void shrink(size_t reserve);
 
 
@@ -58,7 +61,7 @@ private:
   ssize_t readIndex_;
   ssize_t writeIndex_;
 
-
+  static const char kCRLF[];
 
 };
 

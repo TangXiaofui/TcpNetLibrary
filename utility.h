@@ -37,6 +37,20 @@ namespace CurrentThread{
   long tid();
 }
 
+typedef std::function<void()> Task;
+struct AutoContext: noncopyable {
+    void* ctx;
+    Task ctxDel;
+    AutoContext():ctx(0) {}
+    template<class T> T& context() {
+        if (ctx == NULL) {
+            ctx = new T();
+            ctxDel = [this] { delete (T*)ctx; };
+        }
+        return *(T*)ctx;
+    }
+    ~AutoContext() { if (ctx) ctxDel(); }
+};
 
 
 const char* strerror_tl(int savedErrno);

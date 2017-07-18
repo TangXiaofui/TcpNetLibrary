@@ -18,6 +18,8 @@ public:
   static TimeStamp now();
   int64_t microSecondsSinceEpoch();
   std::string toString() const;
+  std::string toFormattedString(bool showMicroseconds = true) const;
+  void swap(TimeStamp & that);
 
   bool valid();
   static TimeStamp invaild();
