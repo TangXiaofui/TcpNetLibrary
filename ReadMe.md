@@ -1,17 +1,32 @@
 测试
-	编译选项 -g -finline-limit = 1000  
+	编译选项 -O2 -finline-limit = 1000  
 	
 	测试环境 vmware ubuntu14.04
 
 	Intel(R) Core(TM) i7-6700HQ CPU @ 2.60GHz 单核， 内存3G
 	
 吞吐量
-pingpong 
+server single thread
 
+pingpong 
+	./pingpong_client 127.0.0.1 10000     1           4096        1000      60
+						ip 		 port    threadnum   buf size     links    second     
 libevent
+  20455510016 total bytes read - client.cc:142
+  4994021 total messages read - client.cc:143
+  4096 average message size - client.cc:144
+  325.131575521 MiB/s throughput - client.cc:146
+
+tcpNetLibrary
+  21956268032 total bytes read - client.cc:142
+  5360452 total messages read - client.cc:143
+  4095.97325599 average message size - client.cc:144
+  348.985481771 MiB/s throughput - client.cc:146
 	
 
 事件处理
+server  single thread 
+
 webbench
 cmd  ./webbench -1 -c 100 --get -t 60 http://127.0.0.1:8000/
 

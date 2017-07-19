@@ -49,7 +49,7 @@ EventLoop *globelLoop;
 int main(void) {
 
 
-   RunAllTests("testHttp");
+   RunAllTests("testTcpServer");
 
    return EXIT_SUCCESS;
 }
@@ -98,22 +98,25 @@ TEST(testConnector)
 void onConnection(const TcpConnectionPtr& conn)
 {
   if(conn->isConneted())
-    log_info("new Connection tid:%lx %s from %s",CurrentThread::tid(),conn->getName().c_str(),conn->getPeerAddr().toHostPort().c_str());
-  else
     {
-      log_info("connection tid:%lx %s is down",CurrentThread::tid(),conn->getName().c_str());
+      conn->setTcpNoDelay(true);
+//      log_info("new Connection tid:%lx %s from %s",CurrentThread::tid(),conn->getName().c_str(),conn->getPeerAddr().toHostPort().c_str());
+    }
+   else
+    {
+//      log_info("connection tid:%lx %s is down",CurrentThread::tid(),conn->getName().c_str());
     }
 
 }
 void onMessage(const TcpConnectionPtr& conn,Buffer *buf,TimeStamp when)
 {
-  log_info("onMessage tid:%lx receive msg(%zd) :  from peer %s",CurrentThread::tid(),buf->readableBytes(),conn->getPeerAddr().toHostPort().c_str());
+//  log_info("onMessage tid:%lx receive msg(%zd) :  from peer %s",CurrentThread::tid(),buf->readableBytes(),conn->getPeerAddr().toHostPort().c_str());
   conn->send(buf->retrieveAsString());
 }
 
 TEST(testTcpServer)
 {
-  Logger::getLogger().setLogLevel(Logger::LogLevel::TRACE);
+  Logger::getLogger().setLogLevel(Logger::LogLevel::ERROR);
 //  Logger::getLogger().setFileName("log");
   printf("main():pid = %lx\n",CurrentThread::tid());
   EventLoop loop;

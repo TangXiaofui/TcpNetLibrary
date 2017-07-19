@@ -42,7 +42,7 @@ public:
     void send(const std::string &message);
     void send(Buffer* message);
     void shutdown();
-
+    void setTcpNoDelay(bool flag);
     template<class T> T& getContext() { return context_.context<T>(); }
 
 private:
@@ -54,7 +54,7 @@ private:
     void handleError();
     void sendInloop(const std::string &message);
     void shutdownInloop();
-    void setTcpNoDelay(bool flag);
+
 
     EventLoop *loop_;
     std::string name_;
