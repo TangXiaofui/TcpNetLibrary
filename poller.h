@@ -36,6 +36,7 @@ private:
   void fillActiveChannels(int nums,ChannelList* activeChannels) const;
 
   EventLoop *loop_;
+  //需要传入poll
   PollerList pollfds_;
   //该map主要用于fillActiveChannels中快速查找
   ChannelMap channels_;

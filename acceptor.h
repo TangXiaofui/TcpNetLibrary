@@ -17,6 +17,8 @@
 
 class EventLoop;
 
+
+//对socket类进行封装，用于服务端调用
 class Acceptor:public noncopyable{
 public:
   using newConnCallBack = std::function<void(int sockfd,const NetAddress&)>;

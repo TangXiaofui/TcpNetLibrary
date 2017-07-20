@@ -15,6 +15,8 @@
 #include <map>
 using namespace std;
 
+
+//设置完相应属性后，将httpResponse组成成buffer对象返回给用户
 class HttpResponse:public copyable{
 public:
   enum HttpStatusCode{
@@ -27,7 +29,9 @@ public:
 
   explicit HttpResponse(bool close);
 
+  //设置响应行状态码
   void setStatusCode(HttpStatusCode code);
+  //设置响应行状态信息
   void setStatusMessage(const string &message);
 
   void setCloseConnection(bool on);
@@ -36,10 +40,13 @@ public:
 
   void setContentType(const string& contentType);
 
+  //设置响应头信息
   void addHeader(const string& key, const string& value);
 
+  //设置响应梯信息
   void setBody(const string& body);
 
+  //组装成buffer
   void appendTobuffer(Buffer *outbuf) const;
 
 private:

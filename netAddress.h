@@ -12,6 +12,7 @@
 #include <string>
 #include <netinet/in.h>
 
+//对struct sockaddr_in进行封装
 class NetAddress:public copyable{
 public:
   explicit NetAddress(uint16_t port);

@@ -18,9 +18,9 @@
 #include <functional>
 class EventLoop;
 
+
 class TcpConnection:public noncopyable,public std::enable_shared_from_this<TcpConnection>{
 public:
-
 
     TcpConnection(EventLoop *loop, const std::string& name, int sockfd, \
 			const NetAddress &localaddr,const NetAddress &peerAddr);

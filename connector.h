@@ -17,6 +17,7 @@
 class EventLoop;
 class Channel;
 
+//对socket进行封装，用于Tcplient
 class Connector : public noncopyable{
 public:
   using newConnectionCallBack = std::function<void (int socked)>;
@@ -31,7 +32,9 @@ public:
   const NetAddress& getServerAddress();
 
 private:
+
   enum Status{kDisconnect, kConnecting, kConnected};
+  //设置最大重连超时
   static const int kMaxRetryDelay = 30 * 1000;
   static const int kInitRetryDelay = 500;
 

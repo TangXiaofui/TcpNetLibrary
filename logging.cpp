@@ -123,9 +123,11 @@ void Logger::record(int level,const char* file,int line,const char* funcName,con
 void Logger::RotateFile()
 {
   time_t nowTime = time(nullptr);
+  //若文件名为空，或者未到时间，则跳过
   if(fileName_.size() == 0 || (nowTime - timezone)/rotateInterval_ == (lastRotate_ - timezone)/rotateInterval_)
     return;
 
+  //判断是否到时间
   if( (nowTime - timezone)/rotateInterval_ == (lastRotate_ - timezone)/rotateInterval_)
     return ;
   lastRotate_ = nowTime;

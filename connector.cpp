@@ -89,7 +89,7 @@ void Connector::connect()
   int saveError = (ret == 0)? 0 :errno;
   switch(saveError){
 	case 0:
-	//The socket is nonblocking and the connection cannot be completed  immediately.
+	//The socket is nonblocking and the connection cannot be completed  immediately. need more check
         case EINPROGRESS:
         // The system call was interrupted by a signal that was caught
         case EINTR:

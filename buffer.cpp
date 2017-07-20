@@ -133,6 +133,7 @@ void  Buffer::shrink(size_t reserve)
 }
 
 
+//使用栈空间，方便管理
 ssize_t  Buffer::readFd(int fd, int* saveError)
 {
   char extraBuf[65536];
@@ -163,6 +164,7 @@ ssize_t  Buffer::readFd(int fd, int* saveError)
 
 char*  Buffer::begin()
 {
+  //将interator转换成指针类型，指向连续地址空间
   return &*buffer_.begin();
 }
 
@@ -171,6 +173,8 @@ const char*  Buffer::begin() const
   return &*buffer_.begin();
 }
 
+
+//判断空间是否真的用完，是的话resize，否的话移动数据
 void  Buffer::makeSpace(size_t len)
 {
   if(writableBytes() + prependableBytes() < len + kCheapPrepared)

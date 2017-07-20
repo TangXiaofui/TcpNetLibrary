@@ -71,7 +71,7 @@ public: 					\
 bool CATNAME(_Test_ignore_,name) = 	        \
 ::RegisterTest(#name,&CATNAME(_Test_,name)::_RunIt);      \
 void CATNAME(_Test_,name)::Run()
-
+//设置一个变量才能调用函数
 
 class Tester{
 private:

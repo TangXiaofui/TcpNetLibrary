@@ -13,6 +13,7 @@
 #include <string>
 #include <map>
 
+//httpContext解析http请求后设置相应成员，用户获取该类对象，从而得到请求的各种信息
 class HttpRequest:public copyable{
 public:
   enum Method{

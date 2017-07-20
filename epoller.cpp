@@ -40,6 +40,7 @@ Epoller::~Epoller()
 
 TimeStamp Epoller::poll(int timeoutMs,ChannelList* activeChannels)
 {
+  //与poll不同，不用每次都把所以事件从用户区拷贝到内核区去检测是否有事件发生，epoll自动将发生的事件填充到events_
   int numEvent = ::epoll_wait(epollfd_,&*events_.begin(),static_cast<int>(events_.size()),timeoutMs);
   TimeStamp now (TimeStamp::now());
   if(numEvent > 0)
@@ -83,6 +84,7 @@ void Epoller::updateChannel(Channel* channel)
   assertInLoopThread();
   log_trace("fd %d events : %d",channel->fd(),channel->events());
   const int index = channel->index();
+  //channels_单纯用来查找,并进行一些检查
   if(index == kNew || index == kDelete)
     {
       int fd = channel->fd();
@@ -142,6 +144,8 @@ void Epoller::assertInLoopThread()
 }
 
 
+
+//优化措施，不做修改或者删除检测，直接往epoll注册新的事件
 
 void Epoller::update(int operation,Channel *channel)
 {

@@ -15,6 +15,8 @@
 #include <string>
 
 
+
+//作为TCP输入和输出的缓冲区，当收到的数据不完整时，不能阻塞的读或者写，因此可以放入缓冲区
 class Buffer:public copyable{
 public:
   static const size_t kCheapPrepared = 8;

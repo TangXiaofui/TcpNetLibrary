@@ -21,7 +21,7 @@ static int createEvent()
   return fd;
 }
 
-
+//线程全局变量
 __thread EventLoop* loopInThread_ = nullptr;
 
 //注意：初始化列表的顺序只于定义的顺序有关

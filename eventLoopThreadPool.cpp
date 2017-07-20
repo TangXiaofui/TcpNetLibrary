@@ -43,9 +43,12 @@ void EventLoopThreadPool::start()
     }
 }
 
+
+
 EventLoop* EventLoopThreadPool::getNextLoop()
 {
   baseloop_->assertInLoopThread();
+ //设置默认值，万一不支持线程池
   EventLoop *loop = baseloop_;
 
   if(!loops_.empty())

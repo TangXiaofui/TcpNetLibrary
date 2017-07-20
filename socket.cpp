@@ -143,6 +143,7 @@ int createNoBlockSock()
     }
   return sockfd;
 }
+
 using SA = struct sockaddr;
 
 const SA* sockaddr_cast(const struct sockaddr_in *addr)

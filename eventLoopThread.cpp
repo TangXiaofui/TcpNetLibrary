@@ -29,7 +29,9 @@ EventLoop* EventLoopThread::startLoop()
   thread_ = std::move(std::thread(std::bind(&EventLoopThread::threadFunc,this)));
   {
     //本次临界区用于同步线程的创建
+    //这里是否可以用C++11 future
      std::unique_lock<std::mutex> lock(mtx_);
+     //这里需要用while是为了进一步确定loop已经扶植
      while(loop_ == nullptr)
        cond_.wait(lock);
   }

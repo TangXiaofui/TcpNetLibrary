@@ -128,6 +128,7 @@ void TcpConnection::handleWrite()
       ssize_t n = ::write(channel_->fd(),outputBuffer_.peek(),outputBuffer_.readableBytes());
       if(n > 0){
 	  outputBuffer_.retrieve(n);
+	  //若buffer写完，则马上取消写事件，防止不断的出发写事件，造成busyloop
 	  if(outputBuffer_.readableBytes() == 0)
 	    {
 	      channel_->disableWriting();
@@ -198,6 +199,7 @@ void TcpConnection::shutdown()
 
 void TcpConnection::sendInloop(const std::string &message)
 {
+  //当有数据需要发送时，先直接发送，若有还没发送则放入缓存区，并注册写事件。这样会不断出发写事件，然后调用handleWrite
   loop_->assertInLoopThread();
   ssize_t nWrote = 0;
   if(!channel_->isWriting() && outputBuffer_.readableBytes() == 0)

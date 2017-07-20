@@ -5,8 +5,6 @@
  *      Author: txh
  */
 
-
-
 #include "timerQueue.h"
 #include "logging.h"
 #include "eventLoop.h"

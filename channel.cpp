@@ -35,6 +35,19 @@ Channel::~Channel()
   assert(!eventHanding_);
 }
 
+
+/*
+ * POLLHUP, on the other hand, indicates that your file descriptor is valid, but that it's in a state where:
+   A device has been disconnected, or a pipe or FIFO has been closed by the last process that had it open for
+ writing.
+   Once set, the hangup state of a FIFO shall persist until some process opens the FIFO for writing or until all
+ read-only file descriptors for the FIFO are closed. This event and POLLOUT are mutually-exclusive; a stream
+ can never be writable if a hangup has occurred. However, this event and POLLIN, POLLRDNORM, POLLRDBAND, or
+ POLLPRI are not mutually-exclusive. This flag is only valid in the revents bitmask; it shall be ignored
+ in the events member.
+Source: http://pubs.opengroup.org/onlinepubs/9699919799/functions/poll.html
+If you want to see POLLHUP, simply open a pipe, close the reading end, and query the writing end with poll.
+*/
 void Channel::handleEvent(TimeStamp receiveTime)
 {
   eventHanding_ = true;

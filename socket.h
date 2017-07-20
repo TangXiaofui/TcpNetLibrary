@@ -12,7 +12,7 @@
 
 class NetAddress;
 
-
+//对socket进行封装，管理sockfd生存周期
 class Socket:public noncopyable{
 public:
   explicit Socket(int fd);

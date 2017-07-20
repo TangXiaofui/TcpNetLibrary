@@ -20,7 +20,7 @@ Poller::Poller(EventLoop *loop)
 
 Poller::~Poller()
 {
-  //不清除fd，有生成fd的具体类自己管理fd
+  //不清除fd，由生成fd的具体类自己管理fd
 }
 
 TimeStamp Poller::poll(int timeoutMs,ChannelList* activeChannels)
@@ -89,8 +89,8 @@ void Poller::removeChannel(Channel *channel)
     }
   else
     {
-      //可以优化，把要删除的和最后一个元素进行交换，然后pop_back
-
+      //不能找到位置直接erase，否则后面的索引全部失效
+      //只能与最后交换，然后pop_back
       //pollfds_.erase(pollfds_.begin()+idx);
       int channelAtEnd = pollfds_.back().fd;
       if(channelAtEnd < 0)

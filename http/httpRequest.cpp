@@ -109,6 +109,7 @@ void HttpRequest::addHeader(const char *start, const char* colon, const char* en
 {
   string field(start,colon);
   ++colon;
+  // 去除前后空格
   while(colon < end && isspace(*colon)){
       ++colon;
   }

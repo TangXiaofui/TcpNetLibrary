@@ -13,6 +13,7 @@
 #include "../buffer.h"
 #include "../timeStamp.h"
 
+//对buffer内的http请求进行解析，将解析后的内容填充到request_
 class HttpContext:public copyable{
 public:
   enum HttpRequestParseState{
@@ -28,6 +29,7 @@ public:
 
   void reset();
 
+  //针对不同的调用，返回不同的对象
   const HttpRequest & request() const;
   HttpRequest& request();
 

@@ -20,6 +20,7 @@ public:
   Channel(EventLoop* loop,int fd);
   ~Channel();
 
+  //处理事件，并根据具体事件调用相应回调函数
   void handleEvent(TimeStamp receiveTime);
   void setReadCallBack(const ReadEventCallback &cb );
   void setWriteCallBack(const EventCallback &cb);
@@ -37,8 +38,10 @@ public:
   void disableAll();
 
   int fd();
+  //用于poll快速查找
   int index();
   void setIndex(int idx);
+
   bool isNoneEvent() const;
   EventLoop* ownerLoop();
 

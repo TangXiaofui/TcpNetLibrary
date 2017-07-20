@@ -15,6 +15,8 @@
 #include "timeStamp.h"
 #include "eventLoop.h"
 
+//需要判断epollhup 与 pollhup是否相同，否则channel的handleEent会出现错误
+
 
 class EventLoop;
 class Channel;
@@ -31,7 +33,9 @@ public:
   ~Epoller();
   TimeStamp poll(int timeoutMs,ChannelList* activeChannels);
 
+  //更新监听的时间列表
   void updateChannel(Channel* channel);
+  //删除不需要监听的事件描述符
   void removeChannel(Channel* channel);
   void assertInLoopThread();
 private:
@@ -41,7 +45,9 @@ private:
 
   EventLoop *loop_;
   int epollfd_;
+  //当有事件发生时，进行填充
   EventList events_;
+  //只是用作查找以及检测
   ChannelMap channels_;
 
 };

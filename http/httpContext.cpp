@@ -23,6 +23,7 @@ bool HttpContext::gotAll() const
 void HttpContext::reset()
 {
   state_ = kExpectRequestLine;
+
   HttpRequest dummy;
   request_.swap(dummy);
 }
@@ -41,8 +42,10 @@ bool HttpContext::parseRequest(Buffer* buf, TimeStamp receiveTime)
 {
   bool ok = true;
   bool hasMore = true;
+  //http协议请求行，请求头，请求体都是按照\r\n分割开
   while(hasMore)
     {
+      //状态机，依次处理各个段
       if(state_ == kExpectRequestLine)
 	{
 	  const char *crlf = buf->findCRLF();
@@ -100,12 +103,14 @@ bool HttpContext::processRequestLine(const char* begin, const char* end)
   bool success = true;
   const char *start = begin;
   const char *space = std::find(start,end,' ');
+  //解析请求行，以空格为分割
   if(space != end && request_.setMethod(begin,space))
     {
 	start = space + 1;
 	space = std::find(start,end,' ');
 	if(space != end)
 	  {
+	    //url中是否有其他请求
 	    const char *question = std::find(start,space,'?');
 	    if(question != space)
 	      {

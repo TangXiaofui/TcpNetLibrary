@@ -25,6 +25,7 @@ public:
 
   EventLoop *getLoop() const;
 
+  //只提供给用户针对收到的httpRequest进行httpResponse;
   void setHttpCallback(const HttpCallback & cb);
 
   void setThreadNum(int numThreads);
@@ -32,7 +33,9 @@ public:
   void start();
 
 private:
+  //连接时的回调
   void onConnection(const TcpConnectionPtr &conn);
+  //收到用户http请求信息的回调
   void onMessage(const TcpConnectionPtr &conn,Buffer *buf,TimeStamp receiveTime);
   void onRequest(const TcpConnectionPtr &conn, const HttpRequest& req);
 

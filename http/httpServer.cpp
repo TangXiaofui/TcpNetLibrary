@@ -22,7 +22,9 @@ HttpServer::HttpServer(EventLoop *loop,const NetAddress &listenAddr,const string
 :server_(loop,listenAddr),
  httpCallback_(defaultHttpCallback)
 {
+  //设置连接时回调
   server_.setConnectionCallBack(std::bind(&HttpServer::onConnection,this,std::placeholders::_1));
+  //设置收到数据的回调函数
   server_.setMessageCallBack(std::bind(&HttpServer::onMessage,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3));
 
 }
@@ -52,6 +54,7 @@ void HttpServer::start()
   server_.start();
 }
 
+
 void HttpServer::onConnection(const TcpConnectionPtr &conn)
 {
 
@@ -59,6 +62,8 @@ void HttpServer::onConnection(const TcpConnectionPtr &conn)
 
 void HttpServer::onMessage(const TcpConnectionPtr &conn,Buffer *buf,TimeStamp receiveTime)
 {
+  //收到信息时，进行解析，成功则回调用户回调函数，否则返回错误，并关闭链接
+  //注意下面的可变对象
   HttpContext &context = conn->getContext<HttpContext>();
   if(!context.parseRequest(buf,receiveTime))
     {
@@ -75,6 +80,7 @@ void HttpServer::onMessage(const TcpConnectionPtr &conn,Buffer *buf,TimeStamp re
 void HttpServer::onRequest(const TcpConnectionPtr &conn, const HttpRequest& req)
 {
   const string& connection = req.getHeader("Connection");
+  //http1.0不支持长连接，http1.1支持,若收到用户请求信息内请求关闭链接，则发完信息后马上进行关闭链接操作
   bool close = (connection == "close") || (req.getVersion() == HttpRequest::kHttp10 && connection != "Keep-Alive");
   HttpResponse response(close);
   httpCallback_(req,&response);
