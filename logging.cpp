@@ -152,6 +152,7 @@ void Logger::RotateFile()
       return ;
   }
 
+
   dup2(fd,fd_);
   close(fd);
 

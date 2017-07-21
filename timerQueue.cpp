@@ -120,7 +120,7 @@ void TimerQueue::cancelInLoop(TimerId timerId)
       delete it->first;
       activeTiemrs_.erase(it);
     }
-  else if(callingExpiredTimers_)
+  else if(callingExpiredTimers_)		//针对自取消，此时cancelInloop运行在handleRead中的run
     {
       cancelingTimers_.insert(timer);
     }

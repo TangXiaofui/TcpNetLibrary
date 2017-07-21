@@ -73,13 +73,14 @@ void TcpServer::newConnection(int sockfd, const NetAddress &addr)
   conn->setConnectedCallBack(connectCallBack_);
   conn->setMessageCallBack(messageCallBack_);
   conn->setCloseCallBack(std::bind(&TcpServer::removeConnection,this,std::placeholders::_1));
-
+  //从TcpServer往TcpConnection线程的队列中插入事件
   ioLoop->runInLoop(std::bind(&TcpConnection::connectEestablished,conn));
 }
 
 
 void TcpServer::removeConnection(const TcpConnectionPtr& conn)
 {
+  //当TcpConnection的handleClose执行，则其他线程会调用该函数，将事件插入TCPserver线程的事件队列
   loop_->runInLoop(std::bind(&TcpServer::removeConnectionInLoop,this,conn));
 }
 
@@ -92,6 +93,7 @@ void TcpServer::setThreadNum(int numThreads)
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
 {
+  //TcpServer线程先将TcpConnection从从TcpConnection中删除引用，然后获取conn对应的线程，并传入相应的connectDestroy事件
   loop_->assertInLoopThread();
   log_info("TcpServer removeConnectionInLoop %s",conn->getName().c_str());
   size_t n = connects_.erase(conn->getName());

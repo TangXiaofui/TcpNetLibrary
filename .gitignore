@@ -5,3 +5,5 @@
 MultiThreadSafe
 core
 log
+test/webbench/libeventTest/http-server
+test/pingpong/pingpong_client
