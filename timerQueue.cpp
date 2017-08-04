@@ -17,6 +17,10 @@
 
 int createTimerfd()
 {
+  /*
+   *  CLOCK_MONOTONIC is a nonsettable clock that is not affected by discontinuous changes  in
+      the  system clock (e.g., manual changes to system time).
+  */
   int fd = ::timerfd_create(CLOCK_MONOTONIC,TFD_CLOEXEC | TFD_NONBLOCK);
   if(fd < 0)
     {
@@ -113,6 +117,7 @@ void TimerQueue::cancelInLoop(TimerId timerId)
   assert(timers_.size() == activeTiemrs_.size());
   ActiveTimer timer(timerId.timer_,timerId.sequence_);
   ActiveTimerSet::iterator it = activeTiemrs_.find(timer);
+  //若定时器还没到时，则直接取消
   if(it != activeTiemrs_.end())
     {
       size_t n = timers_.erase(Entry(it->first->expiration(),it->first));
@@ -120,7 +125,7 @@ void TimerQueue::cancelInLoop(TimerId timerId)
       delete it->first;
       activeTiemrs_.erase(it);
     }
-  else if(callingExpiredTimers_)		//针对自取消，此时cancelInloop运行在handleRead中的run
+  else if(callingExpiredTimers_)		//若定时器到时，取消包括自取消，此时cancelInloop运行在handleRead中的run
     {
       cancelingTimers_.insert(timer);
     }
@@ -202,6 +207,8 @@ bool TimerQueue::insert(Timer* timer)
       //当超时时间比原来的小，则需要更新超时时间
       earliestChanged = true;
     }
+
+  //timers_ activeTimers_保存的是一样的内容，只是按不同的方式进行排序，timers按照时间，activeTimers按照定时器地址
   {
     std::pair<TimerList::iterator,bool> result =
 	timers_.emplace(Entry(when,timer));

@@ -145,6 +145,7 @@ void Logger::RotateFile()
       fprintf(stderr,"rename fail, %s %s %d\n",__FILE__,__func__,__LINE__);
       return ;
   }
+  //由于write不是线程安全，导致多线程写可能会发生覆盖，因此需要O_APPEND，后期需要一个专门线程用于写日志
   int fd = open(fileName_.c_str(),O_APPEND|O_CREAT | O_WRONLY | O_CLOEXEC,DEFFILEMODE);
   if(fd < 0)
   {

@@ -36,18 +36,7 @@ Channel::~Channel()
 }
 
 
-/*
- * POLLHUP, on the other hand, indicates that your file descriptor is valid, but that it's in a state where:
-   A device has been disconnected, or a pipe or FIFO has been closed by the last process that had it open for
- writing.
-   Once set, the hangup state of a FIFO shall persist until some process opens the FIFO for writing or until all
- read-only file descriptors for the FIFO are closed. This event and POLLOUT are mutually-exclusive; a stream
- can never be writable if a hangup has occurred. However, this event and POLLIN, POLLRDNORM, POLLRDBAND, or
- POLLPRI are not mutually-exclusive. This flag is only valid in the revents bitmask; it shall be ignored
- in the events member.
-Source: http://pubs.opengroup.org/onlinepubs/9699919799/functions/poll.html
-If you want to see POLLHUP, simply open a pipe, close the reading end, and query the writing end with poll.
-*/
+
 void Channel::handleEvent(TimeStamp receiveTime)
 {
   eventHanding_ = true;
@@ -56,18 +45,38 @@ void Channel::handleEvent(TimeStamp receiveTime)
     {
       log_warn("Chanel handleEvent pollnval");
     }
+  /*
+   A POLLHUP means the socket is no longer connected. In TCP, this means FIN has been received and sent.
+   https://stackoverflow.com/questions/24791625/how-to-handle-the-linux-socket-revents-pollerr-pollhup-and-pollnval
+  */
   if((revent_ & POLLHUP) && (revent_ & POLLIN))
     {
       log_warn("channel handle event pollup");
       if(closeCallBack_)
 	closeCallBack_();
     }
-
+  /*
+   * A POLLERR means the socket got an asynchronous error. In TCP, this typically means a RST has been received
+   * or sent. If the file descriptor is not a socket, POLLERR might mean the device does not support polling.
+  */
   if(revent_ & (POLLNVAL | POLLERR))
     {
       if(errorCallBack_)
 	errorCallBack_();
     }
+
+  /*
+   *  POLLPRI
+                     There is urgent data to read  (e.g.,  out-of-band  data  on  TCP
+                     socket;  pseudoterminal  master  in  packet  mode has seen state
+                     change in slave).
+
+      POLLRDHUP (since Linux 2.6.17)
+                     Stream socket peer closed connection, or shut down writing  half
+                     of  connection.   The  _GNU_SOURCE  feature  test  macro must be
+                     defined (before including any header files) in order  to  obtain
+                     this definition.
+   * */
   if(revent_ & (POLLIN | POLLPRI | POLLRDHUP))
     {
       if(readCallBack_)

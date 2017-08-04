@@ -25,6 +25,7 @@ Poller::~Poller()
 
 TimeStamp Poller::poll(int timeoutMs,ChannelList* activeChannels)
 {
+  //&*获取pollfd数组的地址
   int nums = ::poll(&*pollfds_.begin(),pollfds_.size(),timeoutMs);
   TimeStamp now = TimeStamp::now();
   if(nums > 0){

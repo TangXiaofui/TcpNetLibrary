@@ -21,6 +21,7 @@ public:
   ~Channel();
 
   //处理事件，并根据具体事件调用相应回调函数
+  //使用inline，提高效率
   void handleEvent(TimeStamp receiveTime);
   void setReadCallBack(const ReadEventCallback &cb );
   void setWriteCallBack(const EventCallback &cb);

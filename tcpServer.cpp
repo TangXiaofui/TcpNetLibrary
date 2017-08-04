@@ -73,7 +73,7 @@ void TcpServer::newConnection(int sockfd, const NetAddress &addr)
   conn->setConnectedCallBack(connectCallBack_);
   conn->setMessageCallBack(messageCallBack_);
   conn->setCloseCallBack(std::bind(&TcpServer::removeConnection,this,std::placeholders::_1));
-  //从TcpServer往TcpConnection线程的队列中插入事件
+  //从TcpServer往TcpConnection线程的队列中插入事件,保证线程安全
   ioLoop->runInLoop(std::bind(&TcpConnection::connectEestablished,conn));
 }
 
