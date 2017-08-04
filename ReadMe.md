@@ -48,3 +48,8 @@ libevent
 
 
 	并发数受到最大文件描述符的限制，socket BUF，数据量大小，读写文件速度
+performent
+valgrind --tool=callgrind --separate-threads=yes ./Multi...
+python gprof2dot.py -f callgrind -n10 -s callgrind.out.31113 > valgrind.dot
+dot -Tpng valgrind.dot -o valgrind.png
+
